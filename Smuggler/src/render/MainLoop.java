@@ -123,7 +123,7 @@ public class MainLoop {
 		RawModel model = loader.LoadToVAO(vertices, texturecords, indeces);
 		ModelTexture texture = new ModelTexture(loader.loadTexture("Colorfull"));
 		tmodel = new Texturedmodel(model, texture);
-		ent = new PhiObject(new Vector3f(0, 0, -1), new Vector3f(), 0, 0, 0, 1f, tmodel);
+		ent = new PhiObject(new Vector3f(0, 0, -1), new Vector3f(), 0, 0, 0, 1f, tmodel, true);
 		
 		GLFWKeyCallback kc = new GLFWKeyCallback() {
 			

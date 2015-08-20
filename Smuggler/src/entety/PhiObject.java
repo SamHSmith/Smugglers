@@ -1,11 +1,15 @@
 package entety;
 
+import java.util.ArrayList;
+
 import javax.vecmath.Vector3f;
 
 import models.Texturedmodel;
 
 public class PhiObject implements Object {
 	
+	ArrayList<Object> subObjects= new ArrayList<Object>();
+	boolean dyn;
 	Vector3f position=new Vector3f();
 	Vector3f velocity = new Vector3f();
 	float rx = 0;
@@ -15,7 +19,7 @@ public class PhiObject implements Object {
 	Texturedmodel model = null;
 
 	public PhiObject(Vector3f position, Vector3f velocity, float rx, float ry,
-			float rz, float scale, Texturedmodel model) {
+			float rz, float scale, Texturedmodel model,boolean dyn) {
 		super();
 		this.position = position;
 		this.velocity = velocity;
@@ -24,6 +28,7 @@ public class PhiObject implements Object {
 		this.rz = rz;
 		this.scale = scale;
 		this.model = model;
+		this.dyn=dyn;
 	}
 
 	@Override
@@ -103,6 +108,22 @@ public class PhiObject implements Object {
 
 	public void setModel(Texturedmodel model) {
 		this.model = model;
+	}
+
+	public ArrayList<Object> getSubObjects() {
+		return subObjects;
+	}
+
+	public void setSubObjects(ArrayList<Object> subObjects) {
+		this.subObjects = subObjects;
+	}
+
+	public boolean isDyn() {
+		return dyn;
+	}
+
+	public void setDyn(boolean dyn) {
+		this.dyn = dyn;
 	}
 
 	

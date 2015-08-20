@@ -1,5 +1,7 @@
 package entety;
 
+import java.util.ArrayList;
+
 import javax.vecmath.Vector3f;
 
 import models.Texturedmodel;
@@ -27,6 +29,10 @@ public interface Object {
 	public float getRy();
 
 	public void setRy(float ry);
+	
+	public boolean isDyn();
+
+	public void setDyn(boolean dyn);
 
 	public float getRz();
 
@@ -39,5 +45,9 @@ public interface Object {
 	public Texturedmodel getModel();
 
 	public void setModel(Texturedmodel model);
+	
+	public ArrayList<Object> getSubObjects();
+
+	public void setSubObjects(ArrayList<Object> subObjects);
 
 }
