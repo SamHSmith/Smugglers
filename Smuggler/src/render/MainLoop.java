@@ -39,7 +39,7 @@ public class MainLoop {
 	public static final float NEARPLANE = 0.1f;
 	public static final float FARPLANE = 1000;
 	public static final float SENSITYVITY = 30;
-	public static final float SPACE_JUMP = 0.01f;
+	public static final float SPACE_JUMP = 0.03f;
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	long window;
@@ -52,11 +52,23 @@ public class MainLoop {
 	public Vector3f viewpos = new Vector3f();
 	public Matrix4f viewrotationx = new Matrix4f();
 	public Matrix4f viewrotationy = new Matrix4f();
-	public boolean keyw;
-	public boolean keys;
-	public boolean keya;
-	public boolean keyd;
-	public boolean keyspace;
+	
+	
+	private boolean keyforward;
+	private boolean keybackward;
+	private boolean keyleft;
+	private boolean keyright;
+	private boolean keyupp;
+	private boolean keydown;
+	
+	private int keyFORWARD=GLFW.GLFW_KEY_W;
+	private int keyBACKWARD=GLFW.GLFW_KEY_S;
+	private int keyLEFT=GLFW.GLFW_KEY_A;
+	private int keyRIGHT=GLFW.GLFW_KEY_D;
+	private int keyUPP=GLFW.GLFW_KEY_SPACE;
+	private int keyDOWN=GLFW.GLFW_KEY_LEFT_SHIFT;
+	
+	
 	
 	
 
@@ -200,45 +212,51 @@ public class MainLoop {
 	}
 	
 	public void ckeckkeys(int key, boolean setto){
-		if(key == GLFW.GLFW_KEY_W){
-			keyw = setto;
+		if(key == keyFORWARD){
+			keyforward = setto;
 		}
-		if(key == GLFW.GLFW_KEY_S){
-			keys = setto;
+		if(key == keyBACKWARD){
+			keybackward = setto;
 		}
 		
-		if(key == GLFW.GLFW_KEY_A){
-			keya = setto;
+		if(key == keyLEFT){
+			keyleft = setto;
 		}
-		if(key == GLFW.GLFW_KEY_D){
-			keyd = setto;
+		if(key == keyRIGHT){
+			keyright = setto;
 		}
-		if(key == GLFW.GLFW_KEY_SPACE){
-			keyspace = setto;
+		if(key == keyUPP){
+			keyupp = setto;
+		}
+		if(key == keyDOWN){
+			keydown = setto;
 		}
 				
 	}
 	
 	public void keyaction(){
-		if(keyw){
+		if(keyforward){
 			viewpos.z-=(0.02f*Math.cos(Math.toRadians(viewrotx)));
 			viewpos.x+=(0.02f*Math.sin(Math.toRadians(viewrotx)));
 		}
-		if(keys){
+		if(keybackward){
 			viewpos.z+=(0.02f*Math.cos(Math.toRadians(viewrotx)));
 			viewpos.x-=(0.02f*Math.sin(Math.toRadians(viewrotx)));
 		}
 		
-		if(keya){
+		if(keyleft){
 			viewpos.z-=(0.02f*Math.sin(Math.toRadians(viewrotx)));
 			viewpos.x-=(0.02f*Math.cos(Math.toRadians(viewrotx)));
 		}
-		if(keyd){
+		if(keyright){
 			viewpos.z+=(0.02f*Math.sin(Math.toRadians(viewrotx)));
 			viewpos.x+=(0.02f*Math.cos(Math.toRadians(viewrotx)));
 		}
-		if(keyspace){
+		if(keyupp){
 			viewpos.y+=SPACE_JUMP;
+		}
+		if(keydown){
+			viewpos.y-=SPACE_JUMP;
 		}
 	}
 
