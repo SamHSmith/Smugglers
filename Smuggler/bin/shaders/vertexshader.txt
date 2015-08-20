@@ -1,0 +1,24 @@
+#version 400 core
+
+in vec3 position;
+in vec2 texturecoords;
+
+out vec2 outtexturecoords;
+
+uniform mat4 rotx;
+uniform mat4 roty;
+uniform mat4 rotz;
+uniform mat4 scale;
+uniform mat4 projmat;
+uniform vec3 veiwpos;
+uniform vec3 pos;
+uniform mat4 viewrotx;
+uniform mat4 viewroty;
+
+void main(void){
+
+	gl_Position = projmat* (viewroty*viewrotx)*vec4(position-veiwpos+pos,1.0);
+	
+	outtexturecoords = texturecoords;
+	
+}
