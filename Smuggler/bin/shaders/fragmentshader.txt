@@ -1,12 +1,23 @@
 #version 400 core
 
 in vec2 outtexturecoords;
+in vec3 surfacenormal;
+in vec3 tolightvector;
 
 out vec4 outColor;
 
 uniform sampler2D texturesamp;
+uniform vec3 lightcolor;
 
 void main(void){
-	outColor = texture(texturesamp,outtexturecoords);
+	
+	vec3 unitnormal=normalize(surfacenormal);
+	vec3 unittolight=normalize(tolightvector);
+	
+	float dot = dot(unitnormal,unittolight);
+	float brightness = max(dot*2,0.1*2);
+	vec3 diffuse=brightness*lightcolor;
+	
+	outColor = vec4(diffuse,0.0) *texture(texturesamp,outtexturecoords);
 
 }

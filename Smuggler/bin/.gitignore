@@ -1,3 +1,9 @@
-/entety/
-/render/
+/org/
 /physics/
+/render/
+/shaders/
+/textures/
+/toolbox/
+/entity/
+/loading/
+/models/
