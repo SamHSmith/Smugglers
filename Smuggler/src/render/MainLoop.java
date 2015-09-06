@@ -63,7 +63,10 @@ public class MainLoop {
 	public boolean keyd;
 	public boolean keyspace;
 	
-	
+	/**
+	 * This class is the main class that uses all the other classes
+	 * and maneges of the inputs suchas window mouse or keybored
+	 */
 
 	public static int WIDTH = 1280;
 	public static int HEIGHT = 720;
