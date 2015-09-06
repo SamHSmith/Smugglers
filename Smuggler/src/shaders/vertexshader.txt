@@ -2,23 +2,31 @@
 
 in vec3 position;
 in vec2 texturecoords;
+in vec3 normal;
 
 out vec2 outtexturecoords;
+out vec3 surfacenormal;
+out vec3 tolightvector;
 
-uniform mat4 rotx;
-uniform mat4 roty;
-uniform mat4 rotz;
-uniform mat4 scale;
+uniform mat4 transmat;
+uniform mat4 rotmat;
+uniform mat4 viewrotmat;
+uniform mat4 viewposmat;
 uniform mat4 projmat;
-uniform vec3 veiwpos;
-uniform vec3 pos;
-uniform mat4 viewrotx;
-uniform mat4 viewroty;
+uniform vec3 offset;
+uniform vec3 lightpos;
 
 void main(void){
-
-	gl_Position = projmat* (viewroty*viewrotx)*vec4(position-veiwpos+pos,1.0);
 	
-	outtexturecoords = texturecoords;
+	mat4 transform=transmat*rotmat;
+	mat4 viewmat=viewrotmat*viewposmat;
+	
+	vec4 worldpos=transform*vec4(position,1.0);
+	
+	gl_Position=projmat *viewmat*worldpos;
+	outtexturecoords=texturecoords;
+	
+	surfacenormal=(transform*vec4(normal,1.0)).xyz;
+	tolightvector=(vec4(lightpos,0.0) - worldpos).xyz;
 	
 }

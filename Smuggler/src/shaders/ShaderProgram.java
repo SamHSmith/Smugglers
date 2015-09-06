@@ -5,10 +5,8 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.nio.FloatBuffer;
 
-import javax.vecmath.Matrix3f;
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
-
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.BufferUtils;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL20;
@@ -42,38 +40,19 @@ public abstract class ShaderProgram {
 
 	protected void loadFloat(int location, float valeu) {
 		GL20.glUniform1f(location, valeu);
-	}//TODO Fix rotation matrices and rotation bug!!
+	}
 
 	protected void loadVector3f(int location, Vector3f vec) {
 		GL20.glUniform3f(location, vec.x, vec.y, vec.z);
 	}
 
-	protected void loadmatrix(int location, Matrix4f matrix){
-		GL20.glUniformMatrix4(location, false, writeMatrixToBuffer(matrix, matrixbuffer));
+	protected void loadmatrix(int location, Matrix4f viewmat){
+		GL20.glUniformMatrix4(location, false, writeMatrixToBuffer(viewmat, matrixbuffer));
 		}
 
 	public static FloatBuffer writeMatrixToBuffer(Matrix4f matrix,
 			FloatBuffer buffer) {
-		if (buffer == null) {
-		}
-		int oldPosition = buffer.position();
-		buffer.put(matrix.m00);
-		buffer.put(matrix.m10);
-		buffer.put(matrix.m20);
-		buffer.put(matrix.m30);
-		buffer.put(matrix.m01);
-		buffer.put(matrix.m11);
-		buffer.put(matrix.m21);
-		buffer.put(matrix.m31);
-		buffer.put(matrix.m02);
-		buffer.put(matrix.m12);
-		buffer.put(matrix.m22);
-		buffer.put(matrix.m32);
-		buffer.put(matrix.m03);
-		buffer.put(matrix.m13);
-		buffer.put(matrix.m23);
-		buffer.put(matrix.m33);
-		buffer.position(oldPosition);
+		matrix.get(buffer);
 		return buffer;
 	}
 

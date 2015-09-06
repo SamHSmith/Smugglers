@@ -5,7 +5,7 @@ Bundle-SymbolicName: Smuggler
 Bundle-Version: 1.0.0.qualifier
 Bundle-ClassPath: Smuggler.jar,
  lib/lwjgl.jar
-Export-Package: entety,
+Export-Package: entity,
  models,
  org.lwjgl,
  org.lwjgl.glfw,

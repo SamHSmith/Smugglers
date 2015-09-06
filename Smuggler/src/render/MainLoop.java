@@ -15,12 +15,17 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.util.ArrayList;
 
-import javax.vecmath.Matrix4f;
-import javax.vecmath.Vector3f;
 
+
+
+import java.util.Random;
+
+import loading.ModelLoader;
+import loading.ObjFileLoader;
 import models.RawModel;
 import models.Texturedmodel;
 
+import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -30,8 +35,9 @@ import org.lwjgl.opengl.GLContext;
 
 import shaders.StaticShader;
 import textures.ModelTexture;
-import entety.Object;
-import entety.PhiObject;
+import entity.BasicEntity;
+import entity.Light;
+import entity.PhiEntity;
 
 public class MainLoop {
 
@@ -46,12 +52,11 @@ public class MainLoop {
 	ModelLoader loader;
 	StaticShader shader;
 	Renderer ren;
-	ArrayList<Object> Objects;
-	float viewrotx=0;
-	float viewroty=0;
+	ArrayList<BasicEntity> entitys;
+	public float viewrotx=0;
+	public float viewroty=0;
+	Light light;
 	public Vector3f viewpos = new Vector3f();
-	public Matrix4f viewrotationx = new Matrix4f();
-	public Matrix4f viewrotationy = new Matrix4f();
 	public boolean keyw;
 	public boolean keys;
 	public boolean keya;
@@ -60,8 +65,8 @@ public class MainLoop {
 	
 	
 
-	public static int WIDTH = 1280/2;
-	public static int HEIGHT = 720/2;
+	public static int WIDTH = 1280;
+	public static int HEIGHT = 720;
 
 	public MainLoop() {
 		createDisplay();
@@ -97,21 +102,14 @@ public class MainLoop {
 		loader = new ModelLoader();
 		shader = new StaticShader();
 		ren = new Renderer(shader, this);
-		
 
-		float[] vertices = { -0.5f, 0.5f, 0f, -0.5f, -0.5f, 0f, 0.5f, -0.5f,
-				0f, 0.5f, 0.5f, 0f };
-
-		int[] indeces = { 0, 1, 3, 3, 1, 2 };
-
-		float[] texturecords = { 0, 0, 0, 1, 1, 1, 1, 0 };
-
-		RawModel model = loader.LoadToVAO(vertices, texturecords, indeces);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("Colorfull"));
+		RawModel model = ObjFileLoader.loadObjModel("Sculp", loader);
+		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
-		Objects=new ArrayList<Object>();
-		Object ent = new PhiObject(new Vector3f(0, 0, -1), new Vector3f(), 0, 0, 0, 1f, tmodel, true);
-		Objects.add(ent);
+		entitys=new ArrayList<BasicEntity>();
+		
+		light=new Light(new Vector3f(), new Vector3f(0,0,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
+		entitys.add(new PhiEntity(new Vector3f(0,0,-5), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
 		
 		GLFWKeyCallback kc = new GLFWKeyCallback() {
 			
@@ -133,9 +131,6 @@ public class MainLoop {
 			public void invoke(long arg0, double xpos, double ypos) {
 					viewrotx= (float)xpos * 180 /(WIDTH);
 					viewroty= (float)ypos * -180 / (HEIGHT);
-
-					
-					System.out.println("In invoke callback xpos "+xpos+" ypos "+ypos+ " viewrotx "+viewrotx+" viewroty "+viewroty+" Matrix: "+viewrotationx);
 							
 			}
 		};
@@ -169,7 +164,7 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(Objects);
+				ren.render(entitys, light);
 				fps++;
 				shouldrender = false;
 			}
@@ -192,10 +187,8 @@ public class MainLoop {
 	}
 
 	private void tick(){
-		viewrotationy.rotX((float) Math.toRadians(-viewroty));
-		viewrotationx.rotY((float) Math.toRadians(viewrotx));
-		
-		
+		light.move(0, 0.02f, 0);
+		entitys.get(0).rotate(0.02f, 0.02f, 0.02f);
 		keyaction();
 	}
 	
@@ -215,6 +208,10 @@ public class MainLoop {
 		}
 		if(key == GLFW.GLFW_KEY_SPACE){
 			keyspace = setto;
+		}
+		if(key == GLFW.GLFW_KEY_ESCAPE){
+			close();
+			System.exit(0);
 		}
 				
 	}
