@@ -1,6 +1,7 @@
 /org/
 /physics/
 <<<<<<< HEAD
+<<<<<<< HEAD
 /shaders/
 /toolbox/
 =======
@@ -12,3 +13,7 @@
 /loading/
 /models/
 >>>>>>> refs/heads/AdvanceRendering
+=======
+/shaders/
+/toolbox/
+>>>>>>> refs/heads/keyupdate
