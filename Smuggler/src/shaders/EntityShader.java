@@ -6,7 +6,7 @@ import org.joml.Vector3f;
 import entity.Light;
 
 
-public class StaticShader extends ShaderProgram {
+public class EntityShader extends ShaderProgram {
 	
 	private static final String VERTEXFILE ="src/shaders/vertexshader.txt";
 	private static final String FRAGFILE="src/shaders/fragmentshader.txt";
@@ -19,7 +19,7 @@ public class StaticShader extends ShaderProgram {
 	private int lightposloc;
 	private int lightcolorloc;
 	private int viewposmatloc;
-	public StaticShader() {
+	public EntityShader() {
 		super(VERTEXFILE, FRAGFILE);
 	}
 

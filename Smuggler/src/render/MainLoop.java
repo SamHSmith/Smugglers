@@ -33,7 +33,7 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GLContext;
 
-import shaders.StaticShader;
+import shaders.EntityShader;
 import textures.ModelTexture;
 import entity.BasicEntity;
 import entity.Light;
@@ -50,7 +50,7 @@ public class MainLoop {
 			.errorCallbackPrint(System.err);
 	long window;
 	ModelLoader loader;
-	StaticShader shader;
+	EntityShader shader;
 	Renderer ren;
 	ArrayList<BasicEntity> entitys;
 	public float viewrotx=0;
@@ -103,7 +103,7 @@ public class MainLoop {
 	private void init() {
 		
 		loader = new ModelLoader();
-		shader = new StaticShader();
+		shader = new EntityShader();
 		ren = new Renderer(shader, this);
 
 		RawModel model = ObjFileLoader.loadObjModel("Sculp", loader);

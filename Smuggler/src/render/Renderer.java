@@ -17,18 +17,18 @@ import org.lwjgl.opengl.GL30;
 
 import com.sun.xml.internal.stream.Entity;
 
-import shaders.StaticShader;
+import shaders.EntityShader;
 import toolbox.Maths;
 import entity.BasicEntity;
 import entity.Light;
 
 public class Renderer {
 
-	private StaticShader shader;
+	private EntityShader shader;
 	private MainLoop loop;
 	private Matrix4f projmat;
 
-	public Renderer(StaticShader shader, MainLoop loop) {
+	public Renderer(EntityShader shader, MainLoop loop) {
 		super();
 		this.shader = shader;
 		this.loop = loop;
