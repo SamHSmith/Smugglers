@@ -25,6 +25,7 @@ import loading.ObjFileLoader;
 import models.RawModel;
 import models.Texturedmodel;
 
+import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
@@ -34,8 +35,11 @@ import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.opengl.GLContext;
 
 import shaders.EntityShader;
+import shaders.GUIshader;
 import textures.ModelTexture;
+import toolbox.Maths;
 import entity.BasicEntity;
+import entity.GUI;
 import entity.Light;
 import entity.PhiEntity;
 
@@ -45,14 +49,16 @@ public class MainLoop {
 	public static final float NEARPLANE = 0.1f;
 	public static final float FARPLANE = 1000;
 	public static final float SENSITYVITY = 30;
-	public static final float SPACE_JUMP = 0.01f;
+	public static final float SPACE_JUMP = 0.05f;
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	long window;
 	ModelLoader loader;
 	EntityShader shader;
+	GUIshader guishader;
 	Renderer ren;
 	ArrayList<BasicEntity> entitys;
+	ArrayList<GUI> guis;
 	public float viewrotx=0;
 	public float viewroty=0;
 	Light light;
@@ -62,6 +68,7 @@ public class MainLoop {
 	public boolean keya;
 	public boolean keyd;
 	public boolean keyspace;
+	public float viewrotz;
 	
 	/**
 	 * This class is the main class that uses all the other classes
@@ -104,15 +111,23 @@ public class MainLoop {
 		
 		loader = new ModelLoader();
 		shader = new EntityShader();
-		ren = new Renderer(shader, this);
+		guishader=new GUIshader();
+		ren = new Renderer(shader,guishader, this);
 
-		RawModel model = ObjFileLoader.loadObjModel("Sculp", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
+		RawModel model = ObjFileLoader.loadObjModel("Arrow", loader);
+		ModelTexture texture = new ModelTexture(loader.loadTexture("SwedArr"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 		entitys=new ArrayList<BasicEntity>();
+		guis=new ArrayList<GUI>();
 		
-		light=new Light(new Vector3f(), new Vector3f(0,0,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
-		entitys.add(new PhiEntity(new Vector3f(0,0,-5), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
+		light=new Light(new Vector3f(), new Vector3f(0,1,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
+		entitys.add(new PhiEntity(new Vector3f(0,0,-20), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
+		
+		model = ObjFileLoader.loadObjModel("Eagle", loader);
+		texture = new ModelTexture(loader.loadTexture("EagleTexture"));
+		tmodel = new Texturedmodel(model, texture);
+		
+		guis.add(new GUI(new Vector3f(9f,-9f,0), 0, 0, 0, 0.07f, tmodel, true));
 		
 		GLFWKeyCallback kc = new GLFWKeyCallback() {
 			
@@ -132,8 +147,8 @@ public class MainLoop {
 			
 			@Override
 			public void invoke(long arg0, double xpos, double ypos) {
-					viewrotx= (float)xpos * 180 /(WIDTH);
-					viewroty= (float)ypos * -180 / (HEIGHT);
+					viewroty= (float)xpos * 180 /(WIDTH);
+					viewrotx= -((float)ypos * -180 / (HEIGHT));
 							
 			}
 		};
@@ -167,7 +182,7 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(entitys, light);
+				ren.render(entitys, guis, light);
 				fps++;
 				shouldrender = false;
 			}
@@ -190,8 +205,10 @@ public class MainLoop {
 	}
 
 	private void tick(){
-		light.move(0, 0.02f, 0);
-		entitys.get(0).rotate(0.02f, 0.02f, 0.02f);
+		light.move(0, 0f, 0);
+		guis.get(0).setRx(45+entitys.get(0).getRx());
+		guis.get(0).setRy(entitys.get(0).getRy());
+		guis.get(0).setRz(entitys.get(0).getRz());
 		keyaction();
 	}
 	
@@ -220,31 +237,49 @@ public class MainLoop {
 	}
 	
 	public void keyaction(){
+		Vector3f dist;
 		if(keyw){
-			viewpos.z-=(0.02f*Math.cos(Math.toRadians(viewrotx)));
-			viewpos.x+=(0.02f*Math.sin(Math.toRadians(viewrotx)));
+			dist=new Vector3f(0,0,-0.2f);
+			Vector3f vec=Maths.angleMove(Maths.flippedcreaterotmat((float)Math.toRadians(-viewrotx), (float)Math.toRadians(-viewroty), (float)Math.toRadians(viewrotz)), dist);
+			viewpos.x+=vec.x;
+			viewpos.y+=vec.y;
+			viewpos.z+=vec.z;
 		}
 		if(keys){
-			viewpos.z+=(0.02f*Math.cos(Math.toRadians(viewrotx)));
-			viewpos.x-=(0.02f*Math.sin(Math.toRadians(viewrotx)));
+			dist=new Vector3f(0,0,0.02f);
+			Vector3f vec=Maths.angleMove(Maths.flippedcreaterotmat((float)Math.toRadians(-viewrotx), (float)Math.toRadians(-viewroty), (float)Math.toRadians(viewrotz)), dist);
+			viewpos.x+=vec.x;
+			viewpos.y+=vec.y;
+			viewpos.z+=vec.z;
 		}
 		
 		if(keya){
-			viewpos.z-=(0.02f*Math.sin(Math.toRadians(viewrotx)));
-			viewpos.x-=(0.02f*Math.cos(Math.toRadians(viewrotx)));
+			dist=new Vector3f(-0.02f,0,0);
+			Vector3f vec=Maths.angleMove(Maths.flippedcreaterotmat((float)Math.toRadians(-viewrotx), (float)Math.toRadians(-viewroty), (float)Math.toRadians(viewrotz)), dist);
+			viewpos.x+=vec.x;
+			viewpos.y+=vec.y;
+			viewpos.z+=vec.z;
 		}
 		if(keyd){
-			viewpos.z+=(0.02f*Math.sin(Math.toRadians(viewrotx)));
-			viewpos.x+=(0.02f*Math.cos(Math.toRadians(viewrotx)));
+			dist=new Vector3f(0.02f,0,0);
+			Vector3f vec=Maths.angleMove(Maths.flippedcreaterotmat((float)Math.toRadians(-viewrotx), (float)Math.toRadians(-viewroty), (float)Math.toRadians(viewrotz)), dist);
+			viewpos.x+=vec.x;
+			viewpos.y+=vec.y;
+			viewpos.z+=vec.z;
 		}
 		if(keyspace){
-			viewpos.y+=SPACE_JUMP;
+			dist=new Vector3f(0,SPACE_JUMP,0);
+			Vector3f vec=Maths.angleMove(Maths.flippedcreaterotmat((float)Math.toRadians(-viewrotx), (float)Math.toRadians(-viewroty), (float)Math.toRadians(viewrotz)), dist);
+			viewpos.x+=vec.x;
+			viewpos.y+=vec.y;
+			viewpos.z+=vec.z;
 		}
 	}
 
 	private void close() {
 		loader.cleanup();
 		shader.cleanup();
+		guishader.cleanup();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}

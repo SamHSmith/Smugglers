@@ -37,7 +37,15 @@ public class ModelLoader {
 		indeces(indeces);
 		storeDataInAttributeList(0, 3, posisions);
 		storeDataInAttributeList(1, 2, texturecords);
-		storeDataInAttributeList(2, 3, texturecords);
+		storeDataInAttributeList(2, 3, normals);
+		unbindVAO();
+		return new RawModel(vaoID, indeces.length);
+	}
+	public RawModel LoadToVAO(float[] posisions,float[] texturecords,int[] indeces) {
+		int vaoID=createVAO();
+		indeces(indeces);
+		storeDataInAttributeList(0, 3, posisions);
+		storeDataInAttributeList(1, 2, texturecords);
 		unbindVAO();
 		return new RawModel(vaoID, indeces.length);
 	}

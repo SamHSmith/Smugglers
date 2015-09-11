@@ -1,19 +1,8 @@
-/org/
-/physics/
-<<<<<<< HEAD
-<<<<<<< HEAD
-/shaders/
-/toolbox/
-=======
-/render/
-/shaders/
-/textures/
-/toolbox/
 /entity/
 /loading/
 /models/
->>>>>>> refs/heads/AdvanceRendering
-=======
+/org/
+/physics/
+/render/
 /shaders/
 /toolbox/
->>>>>>> refs/heads/keyupdate
