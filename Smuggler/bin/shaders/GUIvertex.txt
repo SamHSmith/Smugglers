@@ -1,0 +1,19 @@
+#version 400 core
+
+in vec3 position;
+in vec2 texturecoords;
+
+out vec2 outtexturecoords;
+
+uniform mat4 transform;
+uniform mat4 rotform;
+
+void main(void){
+	
+	gl_Position=transform*rotform*vec4(position,1.0);
+	
+	
+	
+	outtexturecoords=texturecoords;
+	
+}

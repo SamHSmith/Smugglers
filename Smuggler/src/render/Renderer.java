@@ -80,6 +80,7 @@ public class Renderer {
 	}
 	
 	private void renderGUI(GUI gui) {
+		
 		RawModel rawmodel = gui.getModel().getModel();
 		Texturedmodel model = gui.getModel();
 		guishader.start();

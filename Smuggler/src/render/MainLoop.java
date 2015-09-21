@@ -209,6 +209,7 @@ public class MainLoop {
 		guis.get(0).setRx(45+entitys.get(0).getRx());
 		guis.get(0).setRy(entitys.get(0).getRy());
 		guis.get(0).setRz(entitys.get(0).getRz());
+		entitys.get(0).move(0, 0, 0.02f);
 		keyaction();
 	}
 	
