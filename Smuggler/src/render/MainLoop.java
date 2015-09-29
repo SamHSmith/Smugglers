@@ -115,7 +115,7 @@ public class MainLoop {
 		ren = new Renderer(shader,guishader, this);
 
 		RawModel model = ObjFileLoader.loadObjModel("Arrow", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("SwedArr"));
+		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 		entitys=new ArrayList<BasicEntity>();
 		guis=new ArrayList<GUI>();
@@ -123,7 +123,7 @@ public class MainLoop {
 		light=new Light(new Vector3f(), new Vector3f(0,1,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
 		entitys.add(new PhiEntity(new Vector3f(0,0,-20), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
 		
-		model = ObjFileLoader.loadObjModel("Eagle", loader);
+		model = ObjFileLoader.loadObjModel("Arrow", loader);
 		texture = new ModelTexture(loader.loadTexture("EagleTexture"));
 		tmodel = new Texturedmodel(model, texture);
 		

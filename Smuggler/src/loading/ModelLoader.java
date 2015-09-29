@@ -32,14 +32,14 @@ public class ModelLoader {
 	private List<Integer> texturesIDs = new ArrayList<Integer>();
 	private static final int BYTES_PER_PIXEL = 4;;
 
-	public RawModel LoadToVAO(float[] posisions,float[] texturecords,float[] normals,int[] indeces) {
+	public RawModel LoadToVAO(float[] posisions,float[] texturecords,float[] normals,int[] indeces,float[] collcoords) {
 		int vaoID=createVAO();
 		indeces(indeces);
 		storeDataInAttributeList(0, 3, posisions);
 		storeDataInAttributeList(1, 2, texturecords);
 		storeDataInAttributeList(2, 3, normals);
 		unbindVAO();
-		return new RawModel(vaoID, indeces.length);
+		return new RawModel(vaoID, indeces.length, collcoords);
 	}
 	public RawModel LoadToVAO(float[] posisions,float[] texturecords,int[] indeces) {
 		int vaoID=createVAO();
@@ -47,7 +47,7 @@ public class ModelLoader {
 		storeDataInAttributeList(0, 3, posisions);
 		storeDataInAttributeList(1, 2, texturecords);
 		unbindVAO();
-		return new RawModel(vaoID, indeces.length);
+		return new RawModel(vaoID, indeces.length, null);
 	}
 	
 	private int createVAO(){

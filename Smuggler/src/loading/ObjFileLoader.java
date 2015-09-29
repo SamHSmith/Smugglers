@@ -13,17 +13,28 @@ import org.joml.Vector2f;
 import org.joml.Vector3f;
 
 public class ObjFileLoader {
+	public static float[] vertecies;
+	public static float[] texturecoords;
+	public static float[] normals;
+	public static float[] coll;
+	public static int[] indecies;
 
-	public static RawModel loadObjModel(String filename, ModelLoader loader) {
+	public static void loadvaribles(String filename, ModelLoader loader) {
 		FileReader fr = null;
+		FileReader collfile = null;
 		try {
-			fr = new FileReader(new File("res/Model/" + filename + ".obj"));
+			fr = new FileReader(new File("res/Model/" + filename + "/"
+					+ "model" + ".obj"));
+			collfile = new FileReader(new File("res/Model/" + filename + "/"
+					+ "coll" + ".cof"));
+
 		} catch (FileNotFoundException e) {
-			System.err.println("Could Not load " + filename);
-			e.printStackTrace();
+			System.err.println("Error while loading " + filename);
+			System.err.println("remmember this does not mean that nothing was loadable");
 		}
+
 		BufferedReader br = new BufferedReader(fr);
-		String line;
+		String line = null;
 		ArrayList<Vector3f> vertices = new ArrayList<Vector3f>();
 		ArrayList<Vector2f> texturecoords = new ArrayList<Vector2f>();
 		ArrayList<Vector3f> normals = new ArrayList<Vector3f>();
@@ -31,6 +42,7 @@ public class ObjFileLoader {
 		float[] verticesarray = null;
 		float[] normalarray = null;
 		float[] texturearray = null;
+		float[] collarray=null;
 		int[] indesiecarray = null;
 		try {
 
@@ -61,22 +73,25 @@ public class ObjFileLoader {
 					break;
 				}
 			}
-			
-			while(line!=null){
-				if(!line.startsWith("f ")){
+
+			while (line != null) {
+				if (!line.startsWith("f ")) {
 					line = br.readLine();
 					continue;
 				}
-				
+
 				String[] current = line.split(" ");
 				String[] vertex1 = current[1].split("/");
 				String[] vertex2 = current[2].split("/");
 				String[] vertex3 = current[3].split("/");
-				
-				prosessvertex(vertex1, indeces, texturecoords, normals, texturearray, normalarray);
-				prosessvertex(vertex2, indeces, texturecoords, normals, texturearray, normalarray);
-				prosessvertex(vertex3, indeces, texturecoords, normals, texturearray, normalarray);
-				line=br.readLine();
+
+				prosessvertex(vertex1, indeces, texturecoords, normals,
+						texturearray, normalarray);
+				prosessvertex(vertex2, indeces, texturecoords, normals,
+						texturearray, normalarray);
+				prosessvertex(vertex3, indeces, texturecoords, normals,
+						texturearray, normalarray);
+				line = br.readLine();
 			}
 			br.close();
 
@@ -84,35 +99,71 @@ public class ObjFileLoader {
 			System.err.println("Unknown file format");
 			e.printStackTrace();
 		}
-		
-		verticesarray= new float[vertices.size()*3];
-		indesiecarray= new int[indeces.size()];
-		
-		int vertexpointer=0;
-		for(Vector3f vertex:vertices){
-			verticesarray[vertexpointer++]=vertex.x;
-			verticesarray[vertexpointer++]=vertex.y;
-			verticesarray[vertexpointer++]=vertex.z;
+
+		verticesarray = new float[vertices.size() * 3];
+		indesiecarray = new int[indeces.size()];
+
+		int vertexpointer = 0;
+		for (Vector3f vertex : vertices) {
+			verticesarray[vertexpointer++] = vertex.x;
+			verticesarray[vertexpointer++] = vertex.y;
+			verticesarray[vertexpointer++] = vertex.z;
 		}
-		
-		for(int i=0;i<indeces.size();i++){
-			indesiecarray[i]=indeces.get(i);
+
+		for (int i = 0; i < indeces.size(); i++) {
+			indesiecarray[i] = indeces.get(i);
 		}
-		return loader.LoadToVAO(verticesarray, texturearray, normalarray, indesiecarray);
+
+		if (collfile != null) {
+
+			br = new BufferedReader(collfile);
+			ArrayList<Float> coll = new ArrayList<Float>();
+			try {
+				while (true) {
+					line = br.readLine();
+					String[] part = line.split(" ");
+
+					coll.add(Float.parseFloat(part[0]));
+					coll.add(Float.parseFloat(part[1]));
+					coll.add(Float.parseFloat(part[2]));
+				}
+
+			} catch (IOException e) {
+				System.out.println("End of coll data");
+			} catch (NullPointerException e1){}
+
+			collarray = new float[coll.size()];
+			
+		}
+		ObjFileLoader.coll=collarray;
+		ObjFileLoader.vertecies = verticesarray;
+		ObjFileLoader.texturecoords = texturearray;
+		ObjFileLoader.normals = normalarray;
+		ObjFileLoader.indecies = indesiecarray;
 	}
-	
-	public static void prosessvertex(String[] vertexData,ArrayList<Integer> indeces,ArrayList<Vector2f> textures,ArrayList<Vector3f> normals,float[] texturearray,float[] normalsarray){
-		int currentvertexPointer= Integer.parseInt(vertexData[0])-1;
+
+	public static RawModel loadObjModel(String filename, ModelLoader loader) {
+		loadvaribles(filename, loader);
+
+		return loader.LoadToVAO(vertecies, texturecoords, normals, indecies,
+				coll);
+	}
+
+	public static void prosessvertex(String[] vertexData,
+			ArrayList<Integer> indeces, ArrayList<Vector2f> textures,
+			ArrayList<Vector3f> normals, float[] texturearray,
+			float[] normalsarray) {
+		int currentvertexPointer = Integer.parseInt(vertexData[0]) - 1;
 		indeces.add(currentvertexPointer);
-		Vector2f currenttex = textures.get(Integer.parseInt(vertexData[1])-1);
-		texturearray[currentvertexPointer*2] = currenttex.x;
-		texturearray[currentvertexPointer*2+1] = 1-currenttex.y;
-		
-		Vector3f currentnorm = normals.get(Integer.parseInt(vertexData[2])-1);
-		normalsarray[currentvertexPointer*3]= currentnorm.x;
-		normalsarray[currentvertexPointer*3+1]= currentnorm.y;
-		normalsarray[currentvertexPointer*3+2]= currentnorm.z;
-		
+		Vector2f currenttex = textures.get(Integer.parseInt(vertexData[1]) - 1);
+		texturearray[currentvertexPointer * 2] = currenttex.x;
+		texturearray[currentvertexPointer * 2 + 1] = 1 - currenttex.y;
+
+		Vector3f currentnorm = normals.get(Integer.parseInt(vertexData[2]) - 1);
+		normalsarray[currentvertexPointer * 3] = currentnorm.x;
+		normalsarray[currentvertexPointer * 3 + 1] = currentnorm.y;
+		normalsarray[currentvertexPointer * 3 + 2] = currentnorm.z;
+
 	}
 
 }
