@@ -129,8 +129,7 @@ public class MainLoop {
 		
 		guis.add(new GUI(new Vector3f(9f,-9f,0), 0, 0, 0, 0.07f, tmodel, true));
 		
-		GLFWKeyCallback kc = new GLFWKeyCallback() {
-			
+		GLFWKeyCallback kc = new GLFWKeyCallback() {			
 			@Override
 			public void invoke(long arg0, int key, int arg2, int action, int arg4) {
 				if(action == GLFW.GLFW_PRESS){
