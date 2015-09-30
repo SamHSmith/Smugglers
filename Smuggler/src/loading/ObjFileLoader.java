@@ -119,13 +119,32 @@ public class ObjFileLoader {
 			br = new BufferedReader(collfile);
 			ArrayList<Float> coll = new ArrayList<Float>();
 			try {
+				line=br.readLine();
+				String[] part1 = line.split(" ");
+				line=br.readLine();
+				String[] part2 = line.split(" ");
+				line=br.readLine();
+				String[] part3 = line.split(" ");
 				while (true) {
-					line = br.readLine();
-					String[] part = line.split(" ");
 
-					coll.add(Float.parseFloat(part[0]));
-					coll.add(Float.parseFloat(part[1]));
-					coll.add(Float.parseFloat(part[2]));
+					coll.add(Float.parseFloat(part1[0]));
+					coll.add(Float.parseFloat(part1[1]));
+					coll.add(Float.parseFloat(part1[2]));
+					
+					coll.add(Float.parseFloat(part2[0]));
+					coll.add(Float.parseFloat(part2[1]));
+					coll.add(Float.parseFloat(part2[2]));
+					
+					coll.add(Float.parseFloat(part3[0]));
+					coll.add(Float.parseFloat(part3[1]));
+					coll.add(Float.parseFloat(part3[2]));
+					
+					line=br.readLine();
+					
+					part1=part2;
+					part2=part3;
+					part3=line.split(" ");
+					
 				}
 
 			} catch (IOException e) {
