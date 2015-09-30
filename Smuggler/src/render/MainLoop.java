@@ -114,23 +114,22 @@ public class MainLoop {
 		guishader=new GUIshader();
 		ren = new Renderer(shader,guishader, this);
 
-		RawModel model = ObjFileLoader.loadObjModel("Arrow", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("SwedArr"));
+		RawModel model = ObjFileLoader.loadObjModel("Buss", loader);
+		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 		entitys=new ArrayList<BasicEntity>();
 		guis=new ArrayList<GUI>();
 		
-		light=new Light(new Vector3f(), new Vector3f(0,1,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
+		light=new Light(new Vector3f(), new Vector3f(0,4,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
 		entitys.add(new PhiEntity(new Vector3f(0,0,-20), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
 		
-		model = ObjFileLoader.loadObjModel("Eagle", loader);
+		model = ObjFileLoader.loadObjModel("Buss", loader);
 		texture = new ModelTexture(loader.loadTexture("EagleTexture"));
 		tmodel = new Texturedmodel(model, texture);
 		
 		guis.add(new GUI(new Vector3f(9f,-9f,0), 0, 0, 0, 0.07f, tmodel, true));
 		
-		GLFWKeyCallback kc = new GLFWKeyCallback() {
-			
+		GLFWKeyCallback kc = new GLFWKeyCallback() {			
 			@Override
 			public void invoke(long arg0, int key, int arg2, int action, int arg4) {
 				if(action == GLFW.GLFW_PRESS){
@@ -206,7 +205,7 @@ public class MainLoop {
 
 	private void tick(){
 		light.move(0, 0f, 0);
-		guis.get(0).setRx(45+entitys.get(0).getRx());
+		guis.get(0).setRx(entitys.get(0).getRx());
 		guis.get(0).setRy(entitys.get(0).getRy());
 		guis.get(0).setRz(entitys.get(0).getRz());
 		entitys.get(0).move(0, 0, 0.02f);

@@ -4,10 +4,12 @@ public class RawModel {
 	
 	private int vaoid;
 	private int vertexCount;
+	float[] collcoords;
 
-	public RawModel(int vaoid,int vertexCount) {
+	public RawModel(int vaoid,int vertexCount,float[] collcoords) {
 		this.vaoid=vaoid;
 		this.vertexCount=vertexCount;
+		this.collcoords=collcoords;
 	}
 
 	public int getVaoid() {

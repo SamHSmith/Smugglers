@@ -31,7 +31,7 @@ public class Renderer {
 	public Renderer(EntityShader shader, GUIshader guishader, MainLoop loop) {
 		super();
 		this.shader = shader;
-		this.guishader=guishader;
+		this.guishader = guishader;
 		this.loop = loop;
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
@@ -42,12 +42,11 @@ public class Renderer {
 		shader.stop();
 	}
 
-	public void render(ArrayList<BasicEntity> Objects,ArrayList<GUI> gUIs, Light light) {
+	public void render(ArrayList<BasicEntity> Objects, ArrayList<GUI> gUIs,
+			Light light) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glClear(GL_COLOR_BUFFER_BIT|GL11.GL_DEPTH_BUFFER_BIT);
+		GL11.glClear(GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
-
-		
 
 		for (int i = 0; i < Objects.size(); i++) {
 			BasicEntity current = Objects.get(i);
@@ -64,27 +63,32 @@ public class Renderer {
 					(float) Math.toRadians(loop.viewrotx),
 					(float) Math.toRadians(loop.viewroty), 0));
 			shader.loadlight(light);
-			
+
 			shader.stop();
 
 			renderEntity(current);
 		}
-		
-		for(GUI current:gUIs){
+
+		for (GUI current : gUIs) {
 			guishader.start();
-			guishader.loadmatices(Maths.createtransmat(current.getPosition(), current.getScale()), Maths.createrotmat(current.getRx(), current.getRy(), current.getRz()));
+			guishader.loadmatices(
+					Maths.createtransmat(current.getPosition(),
+							current.getScale()),
+					Maths.createrotmat(current.getRx() + (float)Math.toRadians(loop.viewrotx),
+							(float) (current.getRy() + Math.toRadians(loop.viewroty)), (float) (current.getRz()
+									+ Math.toRadians(loop.viewrotz))));
 			guishader.stop();
-			
+
 			renderGUI(current);
 		}
 	}
-	
+
 	private void renderGUI(GUI gui) {
-		
+
 		RawModel rawmodel = gui.getModel().getModel();
 		Texturedmodel model = gui.getModel();
 		guishader.start();
-		
+
 		GL30.glBindVertexArray(rawmodel.getVaoid());
 		GL20.glEnableVertexAttribArray(0);
 		GL20.glEnableVertexAttribArray(1);
@@ -98,7 +102,7 @@ public class Renderer {
 		guishader.stop();
 
 	}
-	
+
 	private void renderEntity(BasicEntity ent) {
 
 		RawModel rawmodel = ent.getModel().getModel();
