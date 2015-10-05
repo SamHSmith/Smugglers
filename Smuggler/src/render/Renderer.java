@@ -43,7 +43,7 @@ public class Renderer {
 	}
 
 	public void render(ArrayList<BasicEntity> Objects, ArrayList<GUI> gUIs,
-			Light light) {
+			ArrayList<Light> lights) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
@@ -62,7 +62,7 @@ public class Renderer {
 			shader.loadviewrotmat(Maths.createrotmat(
 					(float) Math.toRadians(loop.viewrotx),
 					(float) Math.toRadians(loop.viewroty), 0));
-			shader.loadlight(light);
+			shader.loadlights(lights);
 
 			shader.stop();
 
