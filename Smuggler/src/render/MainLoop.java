@@ -61,7 +61,7 @@ public class MainLoop {
 	ArrayList<GUI> guis;
 	public float viewrotx=0;
 	public float viewroty=0;
-	Light light;
+	ArrayList<Light> lights;
 	public Vector3f viewpos = new Vector3f();
 	public boolean keyw;
 	public boolean keys;
@@ -113,6 +113,7 @@ public class MainLoop {
 		shader = new EntityShader();
 		guishader=new GUIshader();
 		ren = new Renderer(shader,guishader, this);
+		lights=new ArrayList<Light>();
 
 		RawModel model = ObjFileLoader.loadObjModel("Buss", loader);
 		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
@@ -120,8 +121,12 @@ public class MainLoop {
 		entitys=new ArrayList<BasicEntity>();
 		guis=new ArrayList<GUI>();
 		
-		light=new Light(new Vector3f(), new Vector3f(0,4,-5f), false, 0, 0, 0, 1, new Vector3f(1,1,1));
-		entitys.add(new PhiEntity(new Vector3f(0,0,-20), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
+		
+		lights.add(new Light(new Vector3f(0.01f,0,0), new Vector3f(0,4,-5f), false, 0, 0, 0, 0.5f, new Vector3f(1,1,1),tmodel,new Vector3f(1,0.01f,0.002f)));
+		lights.add(new Light(new Vector3f(-0.01f,0,0), new Vector3f(0,-4,-5f), false, 0, 0, 0, 0.3f, new Vector3f(1,0,1),tmodel,new Vector3f(1,0.01f,0.02f)));
+		entitys.add(new PhiEntity(new Vector3f(0,0,-10), new Vector3f(), 0f, 0f, 0f, 1f, tmodel, false));
+		entitys.add(lights.get(0));
+		entitys.add(lights.get(1));
 		
 		model = ObjFileLoader.loadObjModel("Buss", loader);
 		texture = new ModelTexture(loader.loadTexture("EagleTexture"));
@@ -181,7 +186,7 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(entitys, guis, light);
+				ren.render(entitys, guis, lights);
 				fps++;
 				shouldrender = false;
 			}
@@ -204,7 +209,8 @@ public class MainLoop {
 	}
 
 	private void tick(){
-		light.move(0, 0f, 0);
+		lights.get(0).move(0, 0.005f, 0);
+		lights.get(1).move(0, -0.005f, 0);
 		guis.get(0).setRx(entitys.get(0).getRx());
 		guis.get(0).setRy(entitys.get(0).getRy());
 		guis.get(0).setRz(entitys.get(0).getRz());

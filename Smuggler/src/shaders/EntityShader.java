@@ -1,5 +1,7 @@
 package shaders;
 
+import java.util.ArrayList;
+
 import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
@@ -11,13 +13,16 @@ public class EntityShader extends ShaderProgram {
 	private static final String VERTEXFILE ="src/shaders/vertexshader.txt";
 	private static final String FRAGFILE="src/shaders/fragmentshader.txt";
 	
+	private static final int MAX_LIGHTS=4;
+	
 	private int projmatloc;
 	private int transmatloc;
 	private int viewmatloc;
 	private int rotmatloc;
 	private int offsetloc;
-	private int lightposloc;
-	private int lightcolorloc;
+	private int lightposloc[];
+	private int lightcolorloc[];
+	private int attenuationloc[];
 	private int viewposmatloc;
 	public EntityShader() {
 		super(VERTEXFILE, FRAGFILE);
@@ -38,8 +43,16 @@ public class EntityShader extends ShaderProgram {
 		rotmatloc=super.GetUniFormL("rotmat");
 		projmatloc=super.GetUniFormL("projmat");
 		offsetloc=super.GetUniFormL("offset");
-		lightcolorloc=super.GetUniFormL("lightcolor");
-		lightposloc=super.GetUniFormL("lightpos");
+		
+		lightcolorloc=new int[MAX_LIGHTS];
+		lightposloc=new int[MAX_LIGHTS];
+		attenuationloc=new int[MAX_LIGHTS];
+		
+		for(int i=0;i<MAX_LIGHTS;i++){
+			lightposloc[i] = super.GetUniFormL("lightpos["+i+"]");
+			lightcolorloc[i] = super.GetUniFormL("lightcolor["+i+"]");
+			attenuationloc[i] = super.GetUniFormL("attenuation["+i+"]");
+		}
 	}
 	
 	public void loadprojmat(Matrix4f mat){
@@ -63,9 +76,19 @@ public class EntityShader extends ShaderProgram {
 	public void loadOffset(Vector3f offset){
 		super.loadVector3f(offsetloc, offset);
 	}
-	public void loadlight(Light light){
-		super.loadVector3f(lightposloc, light.getPosition());
-		super.loadVector3f(lightcolorloc, light.getColor());
+	public void loadlights(ArrayList<Light> lights){
+		
+		for(int i=0;i<MAX_LIGHTS;i++){
+			if(i<lights.size()){
+				super.loadVector3f(lightposloc[i], lights.get(i).getPosition());
+				super.loadVector3f(lightcolorloc[i], lights.get(i).getColor());
+				super.loadVector3f(attenuationloc[i], lights.get(i).GetAttenuation());
+			}else{
+				super.loadVector3f(lightposloc[i], new Vector3f(0,0,0));
+				super.loadVector3f(lightcolorloc[i], new Vector3f(0,0,0));
+				super.loadVector3f(attenuationloc[i], new Vector3f(1,0,0));
+			}
+		}
 	}
 
 }

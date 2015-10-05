@@ -2,22 +2,31 @@
 
 in vec2 outtexturecoords;
 in vec3 surfacenormal;
-in vec3 tolightvector;
+in vec3 tolightvector[4];
 
 out vec4 outColor;
 
 uniform sampler2D texturesamp;
-uniform vec3 lightcolor;
+uniform vec3 lightcolor[4];
+uniform vec3 attenuation[4];
 
 void main(void){
-	
+
+	vec3 totaldiff= vec3(0.0);
 	vec3 unitnormal=normalize(surfacenormal);
-	vec3 unittolight=normalize(tolightvector);
 	
-	float dot = dot(unitnormal,unittolight);
-	float brightness = max(dot*2,0.1*2);
-	vec3 diffuse=brightness*lightcolor;
+	for(int i=0;i<4;i++){
 	
-	outColor = vec4(diffuse,0.0) *texture(texturesamp,outtexturecoords);
+	float distance = length(tolightvector[i]);
+	float attFactor =attenuation[i].x + (attenuation[i].y*distance)+(attenuation[i].z*distance*distance);
+	vec3 unittolight=normalize(tolightvector[i]);
+	float dot = dot(unittolight,unitnormal);
+	float brightness = max(dot,0.0);
+	vec3 diffuse=(brightness*lightcolor[i])/attFactor;
+	totaldiff=totaldiff+diffuse;
+	}
+	totaldiff = max(totaldiff,0.1);
+	
+	outColor = vec4(totaldiff,0.0) *texture(texturesamp,outtexturecoords);
 
 }
