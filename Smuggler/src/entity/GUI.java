@@ -43,6 +43,9 @@ public class GUI implements BasicEntity {
 		this.rz+=rz;
 		
 	}
+	
+	@Override
+	public void ModifyRotVelocity(Vector3f Velocity) {}
 
 	@Override
 	public void Scale(float s) {
@@ -127,5 +130,16 @@ public class GUI implements BasicEntity {
 
 	@Override
 	public void removeObject(BasicEntity object) {}
+	
+	@Override
+	public void ModifyVelocity(Vector3f Velocity) {}
+
+	@Override
+	public void setRotVelocity(Vector3f Velocity) {}
+
+	@Override
+	public Vector3f getRotVelocity() {
+		return new Vector3f();
+	}
 
 }

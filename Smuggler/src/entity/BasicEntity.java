@@ -18,7 +18,15 @@ public interface BasicEntity {
 
 	public Vector3f getVelocity();
 
+	public void setRotVelocity(Vector3f Velocity);
+	
+	public Vector3f getRotVelocity();
+
 	public void setVelocity(Vector3f Velocity);
+	
+	public void ModifyVelocity(Vector3f Velocity);
+	
+	public void ModifyRotVelocity(Vector3f Velocity);
 
 	public Vector3f getPosition();
 

@@ -12,6 +12,7 @@ public class PhiEntity implements BasicEntity {
 	
 	boolean dyn;
 	Vector3f velocity = new Vector3f();
+	Vector3f rotVelocity = new Vector3f();
 	ArrayList<BasicEntity> subObjects= new ArrayList<BasicEntity>();
 	BasicEntity master=null;
 	Vector3f position=new Vector3f();
@@ -68,6 +69,14 @@ public class PhiEntity implements BasicEntity {
 		}
 	}
 
+	public Vector3f getRotVelocity() {
+		return rotVelocity;
+	}
+
+	public void setRotVelocity(Vector3f rotVelocity) {
+		this.rotVelocity = rotVelocity;
+	}
+	
 	public Vector3f getPosition() {
 		return position;
 	}
@@ -160,6 +169,18 @@ public class PhiEntity implements BasicEntity {
 	public void removeObject(BasicEntity object) {
 		this.subObjects.remove(object);
 		object.setMaster(null);
+	}
+
+	@Override
+	public void ModifyVelocity(Vector3f Velocity) {
+		this.velocity.add(Velocity);
+		
+	}
+	
+	@Override
+	public void ModifyRotVelocity(Vector3f Velocity) {
+		this.rotVelocity.add(Velocity);
+		
 	}
 
 	

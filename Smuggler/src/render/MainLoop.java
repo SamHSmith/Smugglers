@@ -52,6 +52,7 @@ public class MainLoop {
 	public static final float SPACE_JUMP = 0.05f;
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
+	GLFWKeyCallback kc;
 	long window;
 	ModelLoader loader;
 	EntityShader shader;
@@ -134,7 +135,7 @@ public class MainLoop {
 		
 		guis.add(new GUI(new Vector3f(9f,-9f,0), 0, 0, 0, 0.07f, tmodel, true));
 		
-		GLFWKeyCallback kc = new GLFWKeyCallback() {			
+		kc = new GLFWKeyCallback() {			
 			@Override
 			public void invoke(long arg0, int key, int arg2, int action, int arg4) {
 				if(action == GLFW.GLFW_PRESS){

@@ -19,6 +19,7 @@ public class Effect implements BasicEntity {
 	float rz = 0;
 	float scale = 0;
 	Texturedmodel model = null;
+	Vector3f rotVelocity;
 
 	public Effect(Vector3f velocity,
 			Vector3f position, boolean dyn, float rx, float ry, float rz,
@@ -84,7 +85,15 @@ public class Effect implements BasicEntity {
 			subObjects.get(i).Scale(s);
 		}
 	}
+	
+	public Vector3f getRotVelocity() {
+		return rotVelocity;
+	}
 
+	public void setRotVelocity(Vector3f rotVelocity) {
+		this.rotVelocity = rotVelocity;
+	}
+	
 	@Override
 	public void addObject(BasicEntity object) {
 		this.subObjects.add(object);
@@ -100,6 +109,11 @@ public class Effect implements BasicEntity {
 
 	public ArrayList<BasicEntity> getSubObjects() {
 		return subObjects;
+	}
+	@Override
+	public void ModifyRotVelocity(Vector3f Velocity) {
+		this.rotVelocity.add(Velocity);
+		
 	}
 
 	public Vector3f getColor() {
@@ -187,6 +201,11 @@ public class Effect implements BasicEntity {
 	public void setDyn(boolean dyn) {
 		this.dyn = dyn;
 
+	}
+	@Override
+	public void ModifyVelocity(Vector3f Velocity) {
+		this.velocity.add(Velocity);
+		
 	}
 
 }
