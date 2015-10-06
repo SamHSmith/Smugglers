@@ -240,6 +240,15 @@ public class MainLoop {
 			close();
 			System.exit(0);
 		}
+		if (key == GLFW.GLFW_KEY_M) {
+			if(mousedis&&mousedistimer>=30){
+				mousedis=false;
+				mousedistimer=0;
+			}else if(mousedistimer>=30){
+				mousedis=true;
+				mousedistimer=0;
+			}
+		}
 				
 	}
 	
