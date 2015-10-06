@@ -210,12 +210,7 @@ public class MainLoop {
 	}
 
 	private void tick(){
-		lights.get(0).move(0, 0.005f, 0);
-		lights.get(1).move(0, -0.005f, 0);
-		guis.get(0).setRx(entitys.get(0).getRx());
-		guis.get(0).setRy(entitys.get(0).getRy());
-		guis.get(0).setRz(entitys.get(0).getRz());
-		entitys.get(0).move(0, 0, 0.02f);
+		updatepositions();
 		keyaction();
 	}
 	
@@ -289,6 +284,13 @@ public class MainLoop {
 			viewpos.x+=vec.x;
 			viewpos.y+=vec.y;
 			viewpos.z+=vec.z;
+		}
+	}
+	
+	private void updatepositions(){
+		for(BasicEntity ent:entitys){
+			ent.getPosition().add(ent.getVelocity());
+			ent.rotate(ent.getRotVelocity().x, ent.getRotVelocity().y, ent.getRotVelocity().z);
 		}
 	}
 
