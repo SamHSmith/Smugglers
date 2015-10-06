@@ -70,6 +70,9 @@ public class MainLoop {
 	public boolean keyd;
 	public boolean keyspace;
 	public float viewrotz;
+	public static boolean mousedis=true;
+	public static int mousedistimer=0;
+	
 	
 	/**
 	 * This class is the main class that uses all the other classes
@@ -212,6 +215,14 @@ public class MainLoop {
 	private void tick(){
 		updatepositions();
 		keyaction();
+		
+		if(mousedis){
+		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
+				GLFW.GLFW_CURSOR_DISABLED);
+				}else{
+					GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
+							GLFW.GLFW_CURSOR_NORMAL);
+				}
 	}
 	
 	public void ckeckkeys(int key, boolean setto){
