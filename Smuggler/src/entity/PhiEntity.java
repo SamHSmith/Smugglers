@@ -10,7 +10,6 @@ import models.Texturedmodel;
 
 public class PhiEntity implements BasicEntity {
 	
-	boolean dyn;
 	Vector3f velocity = new Vector3f();
 	Vector3f rotVelocity = new Vector3f();
 	ArrayList<BasicEntity> subObjects= new ArrayList<BasicEntity>();
@@ -22,8 +21,8 @@ public class PhiEntity implements BasicEntity {
 	float scale = 0;
 	Texturedmodel model = null;
 
-	public PhiEntity(Vector3f position, Vector3f velocity, float rx, float ry,
-			float rz, float scale, Texturedmodel model,boolean dyn) {
+	public PhiEntity(Vector3f position, Vector3f velocity,Vector3f rotVelocity, float rx, float ry,
+			float rz, float scale, Texturedmodel model) {
 		super();
 		this.position = position;
 		this.velocity = velocity;
@@ -32,7 +31,7 @@ public class PhiEntity implements BasicEntity {
 		this.rz = rz;
 		this.scale = scale;
 		this.model = model;
-		this.dyn=dyn;
+		this.rotVelocity=rotVelocity;
 	}
 
 	@Override
@@ -147,15 +146,6 @@ public class PhiEntity implements BasicEntity {
 
 	public void setSubObjects(ArrayList<BasicEntity> subObjects) {
 		this.subObjects = subObjects;
-	}
-	
-
-	public boolean isDyn() {
-		return dyn;
-	}
-
-	public void setDyn(boolean dyn) {
-		this.dyn = dyn;
 	}
 
 	@Override

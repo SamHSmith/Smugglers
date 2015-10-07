@@ -39,10 +39,6 @@ public interface BasicEntity {
 	public float getRy();
 
 	public void setRy(float ry);
-	
-	public boolean isDyn();
-
-	public void setDyn(boolean dyn);
 
 	public float getRz();
 

@@ -11,7 +11,6 @@ public class Effect implements BasicEntity {
 	ArrayList<BasicEntity> subObjects = new ArrayList<BasicEntity>();
 	Vector3f velocity = new Vector3f();
 	Vector3f position = new Vector3f();
-	boolean dyn;
 	BasicEntity master = null;
 	Vector3f color;
 	float rx = 0;
@@ -19,16 +18,15 @@ public class Effect implements BasicEntity {
 	float rz = 0;
 	float scale = 0;
 	Texturedmodel model = null;
-	Vector3f rotVelocity;
+	Vector3f rotVelocity=new Vector3f();
 
 	public Effect(Vector3f velocity,
-			Vector3f position, boolean dyn, float rx, float ry, float rz,
+			Vector3f position, float rx, float ry, float rz,
 			float scale, Texturedmodel model,Vector3f color) {
 		super();
 		this.subObjects = new ArrayList<BasicEntity>();
 		this.velocity = velocity;
 		this.position = position;
-		this.dyn = dyn;
 		this.rx = rx;
 		this.ry = ry;
 		this.rz = rz;
@@ -37,13 +35,12 @@ public class Effect implements BasicEntity {
 		this.color=color;
 	}
 	public Effect(Vector3f velocity,
-			Vector3f position, boolean dyn, float rx, float ry, float rz,
+			Vector3f position, float rx, float ry, float rz,
 			float scale, Vector3f color) {
 		super();
 		this.subObjects = new ArrayList<BasicEntity>();
 		this.velocity = velocity;
 		this.position = position;
-		this.dyn = dyn;
 		this.rx = rx;
 		this.ry = ry;
 		this.rz = rz;
@@ -191,17 +188,7 @@ public class Effect implements BasicEntity {
 	public void setModel(Texturedmodel model) {
 		this.model = model;
 	}
-
-	@Override
-	public boolean isDyn() {
-		return dyn;
-	}
-
-	@Override
-	public void setDyn(boolean dyn) {
-		this.dyn = dyn;
-
-	}
+	
 	@Override
 	public void ModifyVelocity(Vector3f Velocity) {
 		this.velocity.add(Velocity);

@@ -47,6 +47,7 @@ public class Renderer {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
+		GL11.glClearDepth(1);
 
 		for (int i = 0; i < Objects.size(); i++) {
 			BasicEntity current = Objects.get(i);
