@@ -13,26 +13,31 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.io.IOException;
 import java.util.ArrayList;
-
-import java.util.Random;
 
 import loading.ModelLoader;
 import loading.ObjFileLoader;
 import models.RawModel;
 import models.Texturedmodel;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GLContext;
+
+import com.sun.media.sound.AlawCodec;
 
 import shaders.EntityShader;
 import shaders.GUIshader;
+import sound.Listener;
+import sound.Sound;
+import sound.Source;
 import textures.ModelTexture;
 import toolbox.Maths;
 import entity.BasicEntity;
@@ -50,6 +55,7 @@ public class MainLoop {
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	GLFWKeyCallback kc;
+	ALContext al;
 	long window;
 	ModelLoader loader;
 	EntityShader shader;
@@ -69,6 +75,9 @@ public class MainLoop {
 	public float viewrotz;
 	public static boolean mousedis = true;
 	public static int mousedistimer = 0;
+	Sound sound;
+	Source forest;
+	Listener listen;
 
 	/**
 	 * This class is the main class that uses all the other classes and maneges
@@ -99,7 +108,8 @@ public class MainLoop {
 			glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-
+		al = ALContext.create();
+		al.makeCurrent();
 		glfwMakeContextCurrent(window);
 		GLContext.createFromCurrent();
 		glfwSwapInterval(1);
@@ -115,24 +125,25 @@ public class MainLoop {
 		lights = new ArrayList<Light>();
 		entitys = new ArrayList<BasicEntity>();
 		guis = new ArrayList<GUI>();
-		
+
 		RawModel model = ObjFileLoader.loadObjModel("Buss", loader);
 		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 
-		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0,0,0.005f), new Vector3f(0.01f,0.001f,0), 0, 0,
-				0, 0.5f, tmodel));
-		
-		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0, 0.1f,
-				new Vector3f(0, 1, 1), tmodel));
+		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0, 0,
+				0.005f), new Vector3f(0.01f, 0.001f, 0), 0, 0, 0, 0.5f, tmodel));
+
+		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0,
+				0.1f, new Vector3f(0, 1, 1), tmodel));
 		entitys.add(lights.get(0));
-		
-		lights.add(new Light(new Vector3f(-0.02f,-0.01f,0.02f), new Vector3f(0, 0, 0), 0, 0, 0, 0.1f,
-				new Vector3f(1, 1, 0), tmodel));
+
+		lights.add(new Light(new Vector3f(-0.02f, -0.01f, 0.02f), new Vector3f(
+				0, 0, 0), 0, 0, 0, 0.1f, new Vector3f(1, 1, 0), tmodel));
 		entitys.add(lights.get(1));
-		
-		lights.add(new Light(new Vector3f(0.02f,0.01f,0.02f), new Vector3f(0, 0, 0), 0, 0, 0, 0.1f,
-				new Vector3f(1, 0, 0), tmodel,new Vector3f(1,0.002f,0.002f)));
+
+		lights.add(new Light(new Vector3f(0.02f, 0.01f, 0.02f), new Vector3f(0,
+				0, 0), 0, 0, 0, 0.1f, new Vector3f(1, 0, 0), tmodel,
+				new Vector3f(1, 0.002f, 0.002f)));
 		entitys.add(lights.get(2));
 
 		model = ObjFileLoader.loadObjModel("Buss", loader);
@@ -168,6 +179,17 @@ public class MainLoop {
 		GLFW.glfwSetCursorPosCallback(window, cpc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
+
+		try {
+			sound = new Sound("Forest.wav");
+			forest = new Source(new Vector3f(), new Vector3f(), sound);
+			listen = new Listener();
+			listen.SetListenerValuse(viewpos, new Vector3f(), viewrotx,
+					viewroty, viewrotz);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 
 	}
 
@@ -220,6 +242,8 @@ public class MainLoop {
 	private void tick() {
 		updatepositions();
 		keyaction();
+		listen.SetListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
+				viewrotz);
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -330,6 +354,7 @@ public class MainLoop {
 		loader.cleanup();
 		shader.cleanup();
 		guishader.cleanup();
+		AL.destroy(al);
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
