@@ -13,6 +13,7 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.ArrayList;
 
@@ -28,7 +29,9 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.openal.AL;
+import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALContext;
+import org.lwjgl.openal.ALDevice;
 import org.lwjgl.opengl.GLContext;
 
 import com.sun.media.sound.AlawCodec;
@@ -108,8 +111,15 @@ public class MainLoop {
 			glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-		al = ALContext.create();
+		al= ALContext.create();
+		ALDevice device = al.getDevice();
+		// Make the context current
 		al.makeCurrent();
+		ALCCapabilities capabilities = device.getCapabilities();
+		 
+		if (!capabilities.OpenALC10)
+		    throw new RuntimeException("OpenAL Context Creation failed");
+		
 		glfwMakeContextCurrent(window);
 		GLContext.createFromCurrent();
 		glfwSwapInterval(1);
@@ -181,13 +191,13 @@ public class MainLoop {
 				GLFW.GLFW_CURSOR_DISABLED);
 
 		try {
-			sound = new Sound("Forest.wav");
+			sound = new Sound("res/Sound/Forest.wav");
 			forest = new Source(new Vector3f(), new Vector3f(), sound);
 			listen = new Listener();
-			listen.SetListenerValuse(viewpos, new Vector3f(), viewrotx,
+			listen.SetlocalListenerValuse(viewpos, new Vector3f(), viewrotx,
 					viewroty, viewrotz);
-		} catch (IOException e) {
-			e.printStackTrace();
+		} catch (FileNotFoundException e) {
+			System.err.println("Error while loading sound");
 		}
 		
 
@@ -242,8 +252,9 @@ public class MainLoop {
 	private void tick() {
 		updatepositions();
 		keyaction();
-		listen.SetListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
+		listen.SetlocalListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
 				viewrotz);
+		listen.UpdateListenerValuse();
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -284,6 +295,12 @@ public class MainLoop {
 				mousedistimer = 0;
 			}
 		}
+		
+		if(key==GLFW.GLFW_KEY_1&&setto==true){
+			System.out.println("Playing forest");
+			forest.Play();
+		}
+			
 
 	}
 
@@ -351,10 +368,13 @@ public class MainLoop {
 	}
 
 	private void close() {
+		sound.destroy();
+		forest.Destroy();
 		loader.cleanup();
 		shader.cleanup();
 		guishader.cleanup();
-		AL.destroy(al);
+		al.destroy();
+		al.getDevice().destroy();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
