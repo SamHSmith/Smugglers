@@ -10,54 +10,35 @@ import org.lwjgl.openal.AL10;
 import toolbox.Maths;
 
 public class Listener {
-	FloatBuffer listenerPos;
-	FloatBuffer listenerVel;
 	FloatBuffer listenerOri;
+
 	public Listener() {
-		/** Position of the listener. */
-		listenerPos = BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f });
-		 
-		/** Velocity of the listener. */
-		listenerVel = BufferUtils.createFloatBuffer(3).put(new float[] { 0.0f, 0.0f, 0.0f });
-		 
-		/** Orientation of the listener. (first 3 elements are "at", second 3 are "up") */
-		listenerOri =
-		    BufferUtils.createFloatBuffer(6).put(new float[] { 0.0f, 0.0f, -1.0f,  0.0f, 1.0f, 0.0f });
-		
-		listenerOri.flip();
-		listenerPos.flip();
-		listenerVel.flip();
+
 	}
-	
-	public void SetlocalListenerValuse(Vector3f pos,Vector3f vel,float rx,float ry,float rz) {
-		/** Position of the listener. */
-		listenerPos = BufferUtils.createFloatBuffer(3).put(new float[] { pos.x, pos.y, pos.z });
-		 
-		/** Velocity of the listener. */
-		listenerVel = BufferUtils.createFloatBuffer(3).put(new float[] { vel.x, vel.y, vel.z });
-		
-		/** Orientation of the listener. (first 3 elements are "at", second 3 are "up") 
-		 * Calculating what direction is forward depending on the rotation values*/
-		
-		Vector3f dir=new Vector3f();
+
+	public void UpdateListenerValuse(Vector3f pos, Vector3f vel, float rx,
+			float ry, float rz) {
+
+		/**
+		 * Orientation of the listener. (first 3 elements are "at", second 3 are
+		 * "up") Calculating what direction is forward depending on the rotation
+		 * values
+		 */
+
+		Vector3f dir = new Vector3f(0, 0, -1);
 		Matrix4f mat = new Matrix4f();
 		mat.rotateX(rx);
 		mat.rotateY(ry);
 		mat.rotateZ(rz);
 		Maths.angleMove(mat, dir);
-		
-		listenerOri =
-		    BufferUtils.createFloatBuffer(6).put(new float[] { dir.x, dir.y, dir.z,  0.0f, 1.0f, 0.0f });
-		
+
+		listenerOri = BufferUtils.createFloatBuffer(6).put(
+				new float[] { dir.x, dir.y, dir.z, 0.0f, 1.0f, 0.0f });
+
 		listenerOri.flip();
-		listenerPos.flip();
-		listenerVel.flip();
-	}
-	
-	public void UpdateListenerValuse(){
-		AL10.alListener(AL10.AL_POSITION,    listenerPos);
-	    AL10.alListener(AL10.AL_VELOCITY,    listenerVel);
-	    AL10.alListener(AL10.AL_ORIENTATION, listenerOri);
+		AL10.alListener3f(AL10.AL_POSITION, pos.x, pos.y, pos.z);
+		AL10.alListener3f(AL10.AL_VELOCITY, vel.x, vel.y, vel.z);
+		AL10.alListener(AL10.AL_ORIENTATION, listenerOri);
 	}
 
 }

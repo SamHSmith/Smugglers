@@ -29,7 +29,11 @@ import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.ALC;
 import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.openal.ALDevice;
 import org.lwjgl.opengl.GLContext;
@@ -79,7 +83,7 @@ public class MainLoop {
 	public static boolean mousedis = true;
 	public static int mousedistimer = 0;
 	Sound sound;
-	Source forest;
+	Source bigRocket;
 	Listener listen;
 
 	/**
@@ -112,12 +116,13 @@ public class MainLoop {
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
 		al= ALContext.create();
-		ALDevice device = al.getDevice();
 		// Make the context current
 		al.makeCurrent();
-		ALCCapabilities capabilities = device.getCapabilities();
+		ALCapabilities capabilities = al.getCapabilities();
+		
+		AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
 		 
-		if (!capabilities.OpenALC10)
+		if (!capabilities.OpenAL10)
 		    throw new RuntimeException("OpenAL Context Creation failed");
 		
 		glfwMakeContextCurrent(window);
@@ -136,12 +141,12 @@ public class MainLoop {
 		entitys = new ArrayList<BasicEntity>();
 		guis = new ArrayList<GUI>();
 
-		RawModel model = ObjFileLoader.loadObjModel("Buss", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
+		RawModel model = ObjFileLoader.loadObjModel("Rocket", loader);
+		ModelTexture texture = new ModelTexture(loader.loadTexture("DaddyRocketText"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 
 		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0, 0,
-				0.005f), new Vector3f(0.01f, 0.001f, 0), 0, 0, 0, 0.5f, tmodel));
+				0.1f), new Vector3f(0.01f, 0.1f, 0), 0, 0, 0, 0.5f, tmodel));
 
 		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0,
 				0.1f, new Vector3f(0, 1, 1), tmodel));
@@ -191,10 +196,10 @@ public class MainLoop {
 				GLFW.GLFW_CURSOR_DISABLED);
 
 		try {
-			sound = new Sound("res/Sound/Forest.wav");
-			forest = new Source(new Vector3f(), new Vector3f(), sound);
+			sound = new Sound("res/Sound/Guitar.wav");
+			bigRocket = new Source(viewpos, new Vector3f(), 10);
 			listen = new Listener();
-			listen.SetlocalListenerValuse(viewpos, new Vector3f(), viewrotx,
+			listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
 					viewroty, viewrotz);
 		} catch (FileNotFoundException e) {
 			System.err.println("Error while loading sound");
@@ -252,9 +257,9 @@ public class MainLoop {
 	private void tick() {
 		updatepositions();
 		keyaction();
-		listen.SetlocalListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
+		listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
 				viewrotz);
-		listen.UpdateListenerValuse();
+		bigRocket.update(entitys.get(0).getPosition(), entitys.get(0).getVelocity(), 20);
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -298,7 +303,7 @@ public class MainLoop {
 		
 		if(key==GLFW.GLFW_KEY_1&&setto==true){
 			System.out.println("Playing forest");
-			forest.Play();
+			bigRocket.Play(sound);
 		}
 			
 
@@ -369,7 +374,7 @@ public class MainLoop {
 
 	private void close() {
 		sound.destroy();
-		forest.Destroy();
+		bigRocket.Destroy();
 		loader.cleanup();
 		shader.cleanup();
 		guishader.cleanup();

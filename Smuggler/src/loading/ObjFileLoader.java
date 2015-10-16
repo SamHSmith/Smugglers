@@ -32,7 +32,7 @@ public class ObjFileLoader {
 			System.err.println("Error while loading " + filename);
 			System.err.println("remmember this does not mean that nothing was loadable");
 		}
-
+		
 		BufferedReader br = new BufferedReader(fr);
 		String line = null;
 		ArrayList<Vector3f> vertices = new ArrayList<Vector3f>();

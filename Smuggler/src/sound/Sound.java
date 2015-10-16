@@ -38,10 +38,11 @@ public class Sound {
 
 		WaveData waveFile = WaveData.create(new BufferedInputStream(fin));
 		AL10.alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
-		// TODO FIX ERROR
+		
 
 		error = AL10.alGetError();
 		if (error != AL10.AL_NO_ERROR) {
+			System.err.println(error);
 			System.err.println("ERROR: " + Maths.getALErrorString(error));
 		}
 
