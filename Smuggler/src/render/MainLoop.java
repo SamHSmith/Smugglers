@@ -13,26 +13,38 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
-
-import java.util.Random;
 
 import loading.ModelLoader;
 import loading.ObjFileLoader;
 import models.RawModel;
 import models.Texturedmodel;
 
-import org.joml.Matrix4f;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.openal.AL;
+import org.lwjgl.openal.AL10;
+import org.lwjgl.openal.AL11;
+import org.lwjgl.openal.ALC;
+import org.lwjgl.openal.ALCCapabilities;
+import org.lwjgl.openal.ALCapabilities;
+import org.lwjgl.openal.ALContext;
+import org.lwjgl.openal.ALDevice;
 import org.lwjgl.opengl.GLContext;
+
+import com.sun.media.sound.AlawCodec;
 
 import shaders.EntityShader;
 import shaders.GUIshader;
+import sound.Listener;
+import sound.Sound;
+import sound.Source;
 import textures.ModelTexture;
 import toolbox.Maths;
 import entity.BasicEntity;
@@ -50,6 +62,7 @@ public class MainLoop {
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	GLFWKeyCallback kc;
+	ALContext al;
 	long window;
 	ModelLoader loader;
 	EntityShader shader;
@@ -69,6 +82,9 @@ public class MainLoop {
 	public float viewrotz;
 	public static boolean mousedis = true;
 	public static int mousedistimer = 0;
+	Sound sound;
+	Source bigRocket;
+	Listener listen;
 
 	/**
 	 * This class is the main class that uses all the other classes and maneges
@@ -99,7 +115,16 @@ public class MainLoop {
 			glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-
+		al= ALContext.create();
+		// Make the context current
+		al.makeCurrent();
+		ALCapabilities capabilities = al.getCapabilities();
+		
+		AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
+		 
+		if (!capabilities.OpenAL10)
+		    throw new RuntimeException("OpenAL Context Creation failed");
+		
 		glfwMakeContextCurrent(window);
 		GLContext.createFromCurrent();
 		glfwSwapInterval(1);
@@ -115,24 +140,25 @@ public class MainLoop {
 		lights = new ArrayList<Light>();
 		entitys = new ArrayList<BasicEntity>();
 		guis = new ArrayList<GUI>();
-		
-		RawModel model = ObjFileLoader.loadObjModel("Buss", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("white"));
+
+		RawModel model = ObjFileLoader.loadObjModel("Rocket", loader);
+		ModelTexture texture = new ModelTexture(loader.loadTexture("DaddyRocketText"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 
-		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0,0,0.005f), new Vector3f(0.01f,0.001f,0), 0, 0,
-				0, 0.5f, tmodel));
-		
-		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0, 0.1f,
-				new Vector3f(0, 1, 1), tmodel));
+		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0, 0,
+				0.1f), new Vector3f(0.01f, 0.1f, 0), 0, 0, 0, 0.5f, tmodel));
+
+		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0,
+				0.1f, new Vector3f(0, 1, 1), tmodel));
 		entitys.add(lights.get(0));
-		
-		lights.add(new Light(new Vector3f(-0.02f,-0.01f,0.02f), new Vector3f(0, 0, 0), 0, 0, 0, 0.1f,
-				new Vector3f(1, 1, 0), tmodel));
+
+		lights.add(new Light(new Vector3f(-0.02f, -0.01f, 0.02f), new Vector3f(
+				0, 0, 0), 0, 0, 0, 0.1f, new Vector3f(1, 1, 0), tmodel));
 		entitys.add(lights.get(1));
-		
-		lights.add(new Light(new Vector3f(0.02f,0.01f,0.02f), new Vector3f(0, 0, 0), 0, 0, 0, 0.1f,
-				new Vector3f(1, 0, 0), tmodel,new Vector3f(1,0.002f,0.002f)));
+
+		lights.add(new Light(new Vector3f(0.02f, 0.01f, 0.02f), new Vector3f(0,
+				0, 0), 0, 0, 0, 0.1f, new Vector3f(1, 0, 0), tmodel,
+				new Vector3f(1, 0.002f, 0.002f)));
 		entitys.add(lights.get(2));
 
 		model = ObjFileLoader.loadObjModel("Buss", loader);
@@ -168,6 +194,17 @@ public class MainLoop {
 		GLFW.glfwSetCursorPosCallback(window, cpc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
+
+		try {
+			sound = new Sound("res/Sound/Guitar.wav");
+			bigRocket = new Source(viewpos, new Vector3f(), 10);
+			listen = new Listener();
+			listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
+					viewroty, viewrotz);
+		} catch (FileNotFoundException e) {
+			System.err.println("Error while loading sound");
+		}
+		
 
 	}
 
@@ -220,6 +257,9 @@ public class MainLoop {
 	private void tick() {
 		updatepositions();
 		keyaction();
+		listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
+				viewrotz);
+		bigRocket.update(entitys.get(0).getPosition(), entitys.get(0).getVelocity(), 20);
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -260,6 +300,12 @@ public class MainLoop {
 				mousedistimer = 0;
 			}
 		}
+		
+		if(key==GLFW.GLFW_KEY_1&&setto==true){
+			System.out.println("Playing forest");
+			bigRocket.Play(sound);
+		}
+			
 
 	}
 
@@ -327,9 +373,13 @@ public class MainLoop {
 	}
 
 	private void close() {
+		sound.destroy();
+		bigRocket.Destroy();
 		loader.cleanup();
 		shader.cleanup();
 		guishader.cleanup();
+		al.destroy();
+		al.getDevice().destroy();
 		glfwDestroyWindow(window);
 		glfwTerminate();
 	}
