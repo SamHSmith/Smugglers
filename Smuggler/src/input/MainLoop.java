@@ -1,4 +1,4 @@
-package render;
+package input;
 
 import static org.lwjgl.glfw.GLFW.glfwCreateWindow;
 import static org.lwjgl.glfw.GLFW.glfwDestroyWindow;
@@ -40,6 +40,7 @@ import org.lwjgl.opengl.GLContext;
 
 import com.sun.media.sound.AlawCodec;
 
+import render.Renderer;
 import shaders.EntityShader;
 import shaders.GUIshader;
 import sound.Listener;
