@@ -27,7 +27,6 @@ public class Source {
 			AL10.alSourcef(source, AL10.AL_REFERENCE_DISTANCE, min);
 			AL10.alSource3f(source, AL10.AL_POSITION, pos.x, pos.y, pos.z);
 			AL10.alSource3f(source, AL10.AL_VELOCITY, vel.x, vel.y, vel.z);
-			AL10.alSourcei(source, AL10.AL_LOOPING, AL10.AL_TRUE);
 		}
 	}
 
@@ -46,9 +45,20 @@ public class Source {
 		AL10.alSourcei(source, AL10.AL_LOOPING, AL10.AL_TRUE);
 	}
 
-	public void Play(Sound s) {
+	public void Play(Sound s,boolean looping) {
+		if(looping){
+			AL10.alSourcei(source, AL10.AL_LOOPING, AL10.AL_TRUE);
+		} else{
+			AL10.alSourcei(source, AL10.AL_LOOPING, AL10.AL_FALSE);
+		}
 		AL10.alSourcei(source, AL10.AL_BUFFER, s.getBuff());
 		AL10.alSourcePlay(source);
+		AL10.alSourcei(source, AL10.AL_BUFFER, 0);
+	}
+	
+	public void Stop(Sound s) {
+		AL10.alSourcei(source, AL10.AL_BUFFER, s.getBuff());
+		AL10.alSourceStop(source);
 		AL10.alSourcei(source, AL10.AL_BUFFER, 0);
 	}
 

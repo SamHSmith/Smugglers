@@ -14,8 +14,10 @@ import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Iterator;
+
+import javax.swing.JEditorPane;
 
 import loading.ModelLoader;
 import loading.ObjFileLoader;
@@ -28,17 +30,11 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
-import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
-import org.lwjgl.openal.ALC;
-import org.lwjgl.openal.ALCCapabilities;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALContext;
-import org.lwjgl.openal.ALDevice;
 import org.lwjgl.opengl.GLContext;
-
-import com.sun.media.sound.AlawCodec;
 
 import render.Renderer;
 import shaders.EntityShader;
@@ -75,17 +71,19 @@ public class MainLoop {
 	public float viewroty = 0;
 	ArrayList<Light> lights;
 	public Vector3f viewpos = new Vector3f();
-	public boolean keyw;
-	public boolean keys;
-	public boolean keya;
-	public boolean keyd;
-	public boolean keyspace;
+	public ArrayList<Key> keys;
 	public float viewrotz;
 	public static boolean mousedis = true;
 	public static int mousedistimer = 0;
 	Sound sound;
 	Source bigRocket;
 	Listener listen;
+
+	/*
+	 * TODO Add Arraylist of Enum keys add checking of key press to change to
+	 * true and Realesed to False No commands is allowed to be done in GLFW it
+	 * all has to be done in key action
+	 */
 
 	/**
 	 * This class is the main class that uses all the other classes and maneges
@@ -116,16 +114,16 @@ public class MainLoop {
 			glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-		al= ALContext.create();
+		al = ALContext.create();
 		// Make the context current
 		al.makeCurrent();
 		ALCapabilities capabilities = al.getCapabilities();
-		
+
 		AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
-		 
+
 		if (!capabilities.OpenAL10)
-		    throw new RuntimeException("OpenAL Context Creation failed");
-		
+			throw new RuntimeException("OpenAL Context Creation failed");
+
 		glfwMakeContextCurrent(window);
 		GLContext.createFromCurrent();
 		glfwSwapInterval(1);
@@ -141,9 +139,15 @@ public class MainLoop {
 		lights = new ArrayList<Light>();
 		entitys = new ArrayList<BasicEntity>();
 		guis = new ArrayList<GUI>();
+		keys = new ArrayList<Key>();
+
+		for (int i = 0; i < 50; i++) {
+			keys.add(Key.False);
+		}
 
 		RawModel model = ObjFileLoader.loadObjModel("Rocket", loader);
-		ModelTexture texture = new ModelTexture(loader.loadTexture("DaddyRocketText"));
+		ModelTexture texture = new ModelTexture(
+				loader.loadTexture("DaddyRocketText"));
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 
 		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0, 0,
@@ -180,7 +184,6 @@ public class MainLoop {
 				}
 			}
 		};
-		GLFW.glfwSetKeyCallback(window, kc);
 
 		GLFWCursorPosCallback cpc = new GLFWCursorPosCallback() {
 
@@ -192,20 +195,20 @@ public class MainLoop {
 			}
 		};
 
+		GLFW.glfwSetKeyCallback(window, kc);
 		GLFW.glfwSetCursorPosCallback(window, cpc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
 
 		try {
 			sound = new Sound("res/Sound/Guitar.wav");
-			bigRocket = new Source(viewpos, new Vector3f(), 10);
+			bigRocket = new Source(viewpos, new Vector3f(), 5);
 			listen = new Listener();
 			listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
 					viewroty, viewrotz);
 		} catch (FileNotFoundException e) {
 			System.err.println("Error while loading sound");
 		}
-		
 
 	}
 
@@ -256,11 +259,13 @@ public class MainLoop {
 	}
 
 	private void tick() {
+		listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
+				viewroty, viewrotz);
+		bigRocket.update(entitys.get(0).getPosition(), entitys.get(0)
+				.getVelocity(), 5);
 		updatepositions();
 		keyaction();
-		listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx, viewroty,
-				viewrotz);
-		bigRocket.update(entitys.get(0).getPosition(), entitys.get(0).getVelocity(), 20);
+		updateKeys();
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -271,48 +276,75 @@ public class MainLoop {
 		}
 	}
 
+	public void updateKeys() {
+		for (int i = 0; i < keys.size(); i++) {
+			if (keys.get(i) == Key.Press) {
+				keys.set(i, Key.True);
+			}
+			if (keys.get(i) == Key.Realesed) {
+				keys.set(i, Key.False);
+			}
+		}
+	}
+
 	public void ckeckkeys(int key, boolean setto) {
 		if (key == GLFW.GLFW_KEY_W) {
-			keyw = setto;
+			if (setto) {
+				keys.set(KeyValues.keyW, Key.Press);
+			} else {
+				keys.set(KeyValues.keyW, Key.Realesed);
+			}
 		}
 		if (key == GLFW.GLFW_KEY_S) {
-			keys = setto;
+			if (setto) {
+				keys.set(KeyValues.keyS, Key.Press);
+			} else {
+				keys.set(KeyValues.keyS, Key.Realesed);
+			}
 		}
 
 		if (key == GLFW.GLFW_KEY_A) {
-			keya = setto;
-		}
-		if (key == GLFW.GLFW_KEY_D) {
-			keyd = setto;
-		}
-		if (key == GLFW.GLFW_KEY_SPACE) {
-			keyspace = setto;
-		}
-		if (key == GLFW.GLFW_KEY_ESCAPE) {
-			close();
-			System.exit(0);
-		}
-		if (key == GLFW.GLFW_KEY_M) {
-			if (mousedis && mousedistimer >= 30) {
-				mousedis = false;
-				mousedistimer = 0;
-			} else if (mousedistimer >= 30) {
-				mousedis = true;
-				mousedistimer = 0;
+			if (setto) {
+				keys.set(KeyValues.keyA, Key.Press);
+			} else {
+				keys.set(KeyValues.keyA, Key.Realesed);
 			}
 		}
-		
-		if(key==GLFW.GLFW_KEY_1&&setto==true){
-			System.out.println("Playing forest");
-			bigRocket.Play(sound);
+		if (key == GLFW.GLFW_KEY_D) {
+			if (setto) {
+				keys.set(KeyValues.keyD, Key.Press);
+			} else {
+				keys.set(KeyValues.keyD, Key.Realesed);
+			}
 		}
-			
+		if (key == GLFW.GLFW_KEY_SPACE) {
+			if (setto) {
+				keys.set(KeyValues.keySpace, Key.Press);
+			} else {
+				keys.set(KeyValues.keySpace, Key.Realesed);
+			}
+		}
+		if (key == GLFW.GLFW_KEY_ESCAPE) {
+			if (setto) {
+				keys.set(KeyValues.keyEscape, Key.Press);
+			} else {
+				keys.set(KeyValues.keyEscape, Key.Realesed);
+			}
+		}
+
+		if (key == GLFW.GLFW_KEY_1) {
+			if (setto) {
+				keys.set(KeyValues.key1, Key.Press);
+			} else {
+				keys.set(KeyValues.key1, Key.Realesed);
+			}
+		}
 
 	}
 
 	public void keyaction() {
 		Vector3f dist;
-		if (keyw) {
+		if (keys.get(KeyValues.keyW) == Key.True) {
 			dist = new Vector3f(0, 0, -0.2f);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
@@ -322,7 +354,7 @@ public class MainLoop {
 			viewpos.y += vec.y;
 			viewpos.z += vec.z;
 		}
-		if (keys) {
+		if (keys.get(KeyValues.keyS) == Key.True) {
 			dist = new Vector3f(0, 0, 0.02f);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
@@ -333,7 +365,7 @@ public class MainLoop {
 			viewpos.z += vec.z;
 		}
 
-		if (keya) {
+		if (keys.get(KeyValues.keyA) == Key.True) {
 			dist = new Vector3f(-0.02f, 0, 0);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
@@ -343,7 +375,7 @@ public class MainLoop {
 			viewpos.y += vec.y;
 			viewpos.z += vec.z;
 		}
-		if (keyd) {
+		if (keys.get(KeyValues.keyD) == Key.True) {
 			dist = new Vector3f(0.02f, 0, 0);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
@@ -353,7 +385,7 @@ public class MainLoop {
 			viewpos.y += vec.y;
 			viewpos.z += vec.z;
 		}
-		if (keyspace) {
+		if (keys.get(KeyValues.keySpace) == Key.True) {
 			dist = new Vector3f(0, SPACE_JUMP, 0);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
@@ -362,6 +394,17 @@ public class MainLoop {
 			viewpos.x += vec.x;
 			viewpos.y += vec.y;
 			viewpos.z += vec.z;
+		}
+		if (keys.get(KeyValues.keyEscape) == Key.Press) {
+			close();
+			System.exit(0);
+		}
+
+		if (keys.get(KeyValues.key1) == Key.Press) {
+			bigRocket.Play(sound, true);
+		}
+		if (keys.get(KeyValues.key1) == Key.Realesed) {
+			bigRocket.Stop(sound);
 		}
 	}
 
