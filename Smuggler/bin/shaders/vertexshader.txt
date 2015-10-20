@@ -13,8 +13,9 @@ uniform mat4 rotmat;
 uniform mat4 viewrotmat;
 uniform mat4 viewposmat;
 uniform mat4 projmat;
-uniform vec3 offset;
+uniform vec3 warpingpoint;
 uniform vec3 lightpos[4];
+uniform float warpingRange;
 
 void main(void){
 	
@@ -23,6 +24,23 @@ void main(void){
 	
 	vec4 worldpos=transform*vec4(position,1.0);
 	
+	float dist=length(worldpos-warpingpoint);
+	
+	
+	float finalwarp;
+	
+	finalwarp=dist/warpingRange;
+	
+	if(finalwarp>1){
+	finalwarp=1;
+	}
+	
+	vec3 warpeff=vec3(finalwarp,finalwarp,finalwarp);
+	
+	vec3 scaledpos=position*warpeff;
+	
+	worldpos=transform*vec4(scaledpos,1.0);
+	
 	gl_Position=projmat *viewmat*worldpos;
 	outtexturecoords=texturecoords;
 	
@@ -30,4 +48,6 @@ void main(void){
 	for(int i=0;i<4;i++){
 		tolightvector[i]=(vec4(lightpos[i],0.0) - worldpos).xyz;
 	}
+	
+	
 }

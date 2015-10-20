@@ -16,10 +16,11 @@ public class EntityShader extends ShaderProgram {
 	private static final int MAX_LIGHTS=4;
 	
 	private int projmatloc;
+	private int warpingRangeloc;
 	private int transmatloc;
 	private int viewmatloc;
 	private int rotmatloc;
-	private int offsetloc;
+	private int warpingpointloc;
 	private int lightposloc[];
 	private int lightcolorloc[];
 	private int attenuationloc[];
@@ -42,7 +43,8 @@ public class EntityShader extends ShaderProgram {
 		viewmatloc=super.GetUniFormL("viewrotmat");
 		rotmatloc=super.GetUniFormL("rotmat");
 		projmatloc=super.GetUniFormL("projmat");
-		offsetloc=super.GetUniFormL("offset");
+		warpingpointloc=super.GetUniFormL("warpingpoint");
+		warpingRangeloc=super.GetUniFormL("warpingRange");
 		
 		lightcolorloc=new int[MAX_LIGHTS];
 		lightposloc=new int[MAX_LIGHTS];
@@ -59,6 +61,10 @@ public class EntityShader extends ShaderProgram {
 		super.loadmatrix(projmatloc, mat);
 	}
 	
+	public void loadwarpingRange(float warpingRange){
+		super.loadFloat(warpingRangeloc, warpingRange);
+	}
+	
 	public void loadrotmat(Matrix4f viewmat){
 		super.loadmatrix(rotmatloc, viewmat);
 	}
@@ -73,8 +79,8 @@ public class EntityShader extends ShaderProgram {
 	public void loadTransmat(Matrix4f transmat){
 		super.loadmatrix(transmatloc, transmat);
 	}
-	public void loadOffset(Vector3f offset){
-		super.loadVector3f(offsetloc, offset);
+	public void loadWarp(Vector3f offset){
+		super.loadVector3f(warpingpointloc, offset);
 	}
 	public void loadlights(ArrayList<Light> lights){
 		

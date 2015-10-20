@@ -10,6 +10,7 @@ import models.RawModel;
 import models.Texturedmodel;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
 import org.lwjgl.opengl.GL13;
 import org.lwjgl.opengl.GL20;
@@ -65,7 +66,11 @@ public class Renderer {
 					(float) Math.toRadians(loop.viewrotx),
 					(float) Math.toRadians(loop.viewroty), 0));
 			shader.loadlights(lights);
-
+			
+			shader.loadWarp(new Vector3f());
+			
+			shader.loadwarpingRange(100);
+			
 			shader.stop();
 
 			renderEntity(current);
