@@ -6,6 +6,7 @@ import org.joml.Matrix4f;
 import org.joml.Vector3f;
 
 import entity.Light;
+import entity.Warp;
 
 
 public class EntityShader extends ShaderProgram {
@@ -17,6 +18,7 @@ public class EntityShader extends ShaderProgram {
 	
 	private int projmatloc;
 	private int warpingRangeloc;
+	private int warpingStrengthloc;
 	private int transmatloc;
 	private int viewmatloc;
 	private int rotmatloc;
@@ -45,6 +47,7 @@ public class EntityShader extends ShaderProgram {
 		projmatloc=super.GetUniFormL("projmat");
 		warpingpointloc=super.GetUniFormL("warpingpoint");
 		warpingRangeloc=super.GetUniFormL("warpingRange");
+		warpingStrengthloc=super.GetUniFormL("warpingStrength");
 		
 		lightcolorloc=new int[MAX_LIGHTS];
 		lightposloc=new int[MAX_LIGHTS];
@@ -61,10 +64,6 @@ public class EntityShader extends ShaderProgram {
 		super.loadmatrix(projmatloc, mat);
 	}
 	
-	public void loadwarpingRange(float warpingRange){
-		super.loadFloat(warpingRangeloc, warpingRange);
-	}
-	
 	public void loadrotmat(Matrix4f viewmat){
 		super.loadmatrix(rotmatloc, viewmat);
 	}
@@ -79,8 +78,10 @@ public class EntityShader extends ShaderProgram {
 	public void loadTransmat(Matrix4f transmat){
 		super.loadmatrix(transmatloc, transmat);
 	}
-	public void loadWarp(Vector3f offset){
-		super.loadVector3f(warpingpointloc, offset);
+	public void loadWarp(Warp warp){
+		super.loadVector3f(warpingpointloc, warp.getPosition());
+		super.loadFloat(warpingRangeloc, warp.getRange());
+		super.loadFloat(warpingStrengthloc, warp.getStrength());
 	}
 	public void loadlights(ArrayList<Light> lights){
 		

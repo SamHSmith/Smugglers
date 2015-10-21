@@ -48,6 +48,7 @@ import entity.BasicEntity;
 import entity.GUI;
 import entity.Light;
 import entity.PhiEntity;
+import entity.Warp;
 
 public class MainLoop {
 
@@ -65,6 +66,7 @@ public class MainLoop {
 	EntityShader shader;
 	GUIshader guishader;
 	Renderer ren;
+	Warp warp;
 	ArrayList<BasicEntity> entitys;
 	ArrayList<GUI> guis;
 	public float viewrotx = 0;
@@ -144,6 +146,8 @@ public class MainLoop {
 		for (int i = 0; i < 50; i++) {
 			keys.add(Key.False);
 		}
+		
+		warp=new Warp(new Vector3f(), new Vector3f(), 0, 0, 0, 1, 4, 2);
 
 		RawModel model = ObjFileLoader.loadObjModel("Rocket", loader);
 		ModelTexture texture = new ModelTexture(
@@ -151,7 +155,7 @@ public class MainLoop {
 		Texturedmodel tmodel = new Texturedmodel(model, texture);
 
 		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0, 0,
-				0.1f), new Vector3f(0.01f, 0.1f, 0), 0, 0, 0, 0.5f, tmodel));
+				0.01f), new Vector3f(0.01f, 0.1f, 0), 0, 0, 0, 0.5f, tmodel));
 
 		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0,
 				0.1f, new Vector3f(0, 1, 1), tmodel));
@@ -236,7 +240,7 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(entitys, guis, lights);
+				ren.render(entitys, guis, lights, warp);
 				fps++;
 				shouldrender = false;
 			}

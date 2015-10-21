@@ -22,6 +22,7 @@ import toolbox.Maths;
 import entity.BasicEntity;
 import entity.GUI;
 import entity.Light;
+import entity.Warp;
 
 public class Renderer {
 
@@ -45,7 +46,7 @@ public class Renderer {
 	}
 
 	public void render(ArrayList<BasicEntity> Objects, ArrayList<GUI> gUIs,
-			ArrayList<Light> lights) {
+			ArrayList<Light> lights,Warp warp) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
@@ -67,9 +68,7 @@ public class Renderer {
 					(float) Math.toRadians(loop.viewroty), 0));
 			shader.loadlights(lights);
 			
-			shader.loadWarp(new Vector3f());
-			
-			shader.loadwarpingRange(100);
+			shader.loadWarp(warp);
 			
 			shader.stop();
 

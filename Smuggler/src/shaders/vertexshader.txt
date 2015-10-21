@@ -16,6 +16,7 @@ uniform mat4 projmat;
 uniform vec3 warpingpoint;
 uniform vec3 lightpos[4];
 uniform float warpingRange;
+uniform float warpingStrength;
 
 void main(void){
 	
@@ -26,18 +27,23 @@ void main(void){
 	
 	float dist=length(worldpos-warpingpoint);
 	
+	float warp=(dist/warpingStrength)/warpingRange;
 	
-	float finalwarp;
-	
-	finalwarp=dist/warpingRange;
-	
-	if(finalwarp>1){
-	finalwarp=1;
+	if(dist>warpingRange){
+	warp=dist/warpingRange;
 	}
+	
+	if(warp>1){
+	warp=1;
+	}
+	
+	
+	
+	float finalwarp=(warp*warp);
 	
 	vec3 warpeff=vec3(finalwarp,finalwarp,finalwarp);
 	
-	vec3 scaledpos=position*warpeff;
+	vec3 scaledpos=warpeff*position;
 	
 	worldpos=transform*vec4(scaledpos,1.0);
 	
