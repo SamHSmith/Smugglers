@@ -6,6 +6,15 @@ import org.joml.Vector3f;
 
 public class Warp extends Effect {
 	
+	/**
+	 * This class is a graphical warp. Remember that the if a vertex is outside the range then all distortion is removed.
+	 * It is adviced to tweek the warp until it is right.
+	 * @serialField strength the strength of the warp
+	 * @serialField range the range of the warp
+	 * 
+	 * @author Sam
+	 */
+	
 	private float strength;
 	private float range;
 
