@@ -1,8 +1,11 @@
 package net;
 
+import java.io.BufferedOutputStream;
 import java.io.BufferedReader;
+import java.io.DataOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.ServerSocket;
 import java.net.Socket;
@@ -15,7 +18,7 @@ import entity.BasicEntity;
 import entity.GUI;
 import entity.PhiEntity;
 
-public class Server implements Runnable {
+public class Server implements Runnable,NetworkValues {
 
 	private ServerSocket sock;
 	private ArrayList<Socket> clients = new ArrayList<Socket>();
@@ -33,20 +36,54 @@ public class Server implements Runnable {
 
 	public void send(String data) {
 		if (data != null) {
+			
+			ArrayList<Socket> socks=new ArrayList<>();
 
 			for (Socket csock : clients) {
 				try {
+					DataOutputStream dos;
+					dos=new DataOutputStream(csock.getOutputStream());
+					
+					dos.writeInt(command);
+					
 					PrintStream pr;
 					pr = new PrintStream(csock.getOutputStream());
 					pr.println(data);
 				} catch (IOException e) {
+					socks.add(csock);
 					System.out.println("Player Diconnected");
-					clients.remove(csock);
 				}
+			}
+			
+			for(Socket csock:socks){
+				clients.remove(csock);
 			}
 
 		}
-		// TODO add commands between server and client
+	}
+	
+	public void sendUniverse(ArrayList<BasicEntity> data) {
+		if (data != null) {
+			
+			ArrayList<Socket> socks=new ArrayList<>();
+
+			for (Socket csock : clients) {
+				try {
+					ObjectOutputStream dos;
+					dos=new ObjectOutputStream(csock.getOutputStream());
+					
+					dos.writeObject(data);
+				} catch (IOException e) {
+					socks.add(csock);
+					System.out.println("Player Diconnected");
+				}
+			}
+			
+			for(Socket csock:socks){
+				clients.remove(csock);
+			}
+
+		}
 	}
 
 	public ArrayList<String> read() throws IOException {

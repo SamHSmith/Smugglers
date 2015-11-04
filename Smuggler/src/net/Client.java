@@ -1,8 +1,11 @@
 package net;
 
 import java.io.BufferedReader;
+import java.io.DataInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.PrintStream;
 import java.net.Socket;
 import java.net.SocketException;
@@ -13,7 +16,7 @@ import org.joml.Vector3f;
 import entity.BasicEntity;
 import entity.GUI;
 
-public class Client {
+public class Client implements NetworkValues{
 	Socket sock;
 	ArrayList<String> input = new ArrayList<String>();
 
@@ -25,34 +28,27 @@ public class Client {
 		}
 	}
 
-	public ArrayList<String> read() throws IOException {
-		ArrayList<String> input = new ArrayList<String>();
+	private String readString() throws IOException {
 		BufferedReader br = null;
 		try {
 			br = new BufferedReader(
 					new InputStreamReader(sock.getInputStream()));
 		} catch (SocketException e) {
 			System.err.println("Diconnected from server");
-
 		}
-		if (sock.getInputStream() != null) {
-			while (true) {
-				if (sock.getInputStream().available() < 1) {
-					break;
-				}
-				
-				String in = br.readLine();
-
-				input.add(in);
-
-				
-
-				if (in == null) {
-					System.out.println("nothing to read");
-				}
-			}
+		
+		return br.readLine();
+	}
+	
+	private int readIdentifier() throws IOException{
+		DataInputStream dis = null;
+		try {
+			dis = new DataInputStream(sock.getInputStream());
+		} catch (SocketException e) {
+			System.err.println("Diconnected from server");
 		}
-		return input;
+		int id=dis.readInt();
+		return id;
 	}
 
 	public void send(String data) {
@@ -68,18 +64,52 @@ public class Client {
 
 		}
 	}
-
-	public void DoCommands(ArrayList<BasicEntity> ents, ArrayList<GUI> guis) {
-
-		ArrayList<String> coms;
-		try {
-			System.out.println("Got here");
-			coms = read();
-		} catch (IOException e) {
-			System.err.println("error while reading");
-			return;
+	
+	private boolean isInput() throws IOException{
+		if(sock.getInputStream().available()>0){
+			return true;
 		}
-		for (String command : coms) {
+		return false;
+	}
+	
+	
+	public void Handleinput(ArrayList<BasicEntity> ents, ArrayList<GUI> guis) throws IOException{
+		while(isInput()){
+			int id=readIdentifier();
+			
+			if(id==Client.command){
+				doCommand(ents, guis, readString());
+			}
+			if(id==Client.universe){
+				ents.clear();
+				ents.addAll(ReadUniverse());
+			}
+		}
+		
+	}
+	
+	@SuppressWarnings("unchecked")
+	public ArrayList<BasicEntity> ReadUniverse() {
+			
+				try {
+					ObjectInputStream dos;
+					dos=new ObjectInputStream(sock.getInputStream());
+					
+					Object obj = dos.readObject();
+					if(obj instanceof ArrayList){
+						return (ArrayList<BasicEntity>) obj;
+					}
+				} catch (IOException e) {
+					System.out.println("Player Diconnected");
+				} catch (ClassNotFoundException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+		return null;
+	}
+
+	private void doCommand(ArrayList<BasicEntity> ents, ArrayList<GUI> guis,String command) {
+		
 			String[] s = command.split(" ");
 			if (s[0].startsWith("move")) {
 				ents.get(Integer.parseInt(s[1])).move(Float.parseFloat(s[2]),
@@ -101,14 +131,7 @@ public class Client {
 								.parseFloat(s[3]), Float.parseFloat(s[4])));
 				System.out.println("Doing command: " + command);
 			}
-		}
-	}
-
-	public ArrayList<String> getInput() {
-		ArrayList<String> temp = new ArrayList<String>(input);
-
-		input.clear();
-		return temp;
+		
 	}
 
 }

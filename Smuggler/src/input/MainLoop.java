@@ -14,15 +14,19 @@ import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Iterator;
 
 import javax.swing.JEditorPane;
+import javax.swing.JOptionPane;
 
 import loading.ModelLoader;
 import loading.ObjFileLoader;
 import models.RawModel;
 import models.Texturedmodel;
+import net.Client;
+import net.Server;
 
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
@@ -56,7 +60,7 @@ public class MainLoop {
 	public static final float NEARPLANE = 0.1f;
 	public static final float FARPLANE = 1000;
 	public static final float SENSITYVITY = 30;
-	public static final float SPACE_JUMP = 0.05f;
+	GLFWCursorPosCallback cpc;
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	GLFWKeyCallback kc;
@@ -80,6 +84,8 @@ public class MainLoop {
 	Sound sound;
 	Source bigRocket;
 	Listener listen;
+	Server ser;
+	Client cl;
 
 	/*
 	 * TODO Add Arraylist of Enum keys add checking of key press to change to
@@ -147,6 +153,14 @@ public class MainLoop {
 			keys.add(Key.False);
 		}
 		
+		int mult=JOptionPane.showConfirmDialog(null, "Please Confirm this if you want to be a client", "Client or Server?", JOptionPane.YES_NO_OPTION);
+		
+		if(mult==0){
+			cl=new Client("localhost", 7985);
+		}else if(mult==1){
+			ser=new Server(7985);
+		}
+		
 		warp=new Warp(new Vector3f(), new Vector3f(), 0, 0, 0, 1, 4, 2);
 
 		RawModel model = ObjFileLoader.loadObjModel("Rocket", loader);
@@ -189,7 +203,7 @@ public class MainLoop {
 			}
 		};
 
-		GLFWCursorPosCallback cpc = new GLFWCursorPosCallback() {
+		cpc = new GLFWCursorPosCallback() {
 
 			@Override
 			public void invoke(long arg0, double xpos, double ypos) {
@@ -257,6 +271,10 @@ public class MainLoop {
 				updates = 0;
 				fps = 0;
 				fpstimer = System.currentTimeMillis();
+				
+				if(ser!=null){
+					ser.send("Hello");
+				}
 			}
 
 		}
@@ -277,6 +295,16 @@ public class MainLoop {
 		} else {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
+		}
+		if(ser!=null){
+			
+		}else {
+			try {
+				cl.Handleinput(entitys, guis);
+			} catch (IOException e) {
+				System.err.println("ERRROR: "+e.getLocalizedMessage());
+				e.printStackTrace();
+			}
 		}
 	}
 
@@ -349,7 +377,7 @@ public class MainLoop {
 	public void keyaction() {
 		Vector3f dist;
 		if (keys.get(KeyValues.keyW) == Key.True) {
-			dist = new Vector3f(0, 0, -0.2f);
+			dist = new Vector3f(0, 0, -0.02f);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
 					(float) Math.toRadians(-viewroty),
@@ -390,7 +418,7 @@ public class MainLoop {
 			viewpos.z += vec.z;
 		}
 		if (keys.get(KeyValues.keySpace) == Key.True) {
-			dist = new Vector3f(0, SPACE_JUMP, 0);
+			dist = new Vector3f(0, -0.02f, 0);
 			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
 					(float) Math.toRadians(-viewrotx),
 					(float) Math.toRadians(-viewroty),

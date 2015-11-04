@@ -1,8 +1,3 @@
-/entity/
-/input/
-/loading/
-/models/
-/net/
 /org/
 /physics/
 /render/
@@ -10,3 +5,8 @@
 /sound/
 /textures/
 /toolbox/
+/entity/
+/input/
+/loading/
+/models/
+/net/
