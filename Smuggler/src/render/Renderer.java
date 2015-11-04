@@ -19,6 +19,7 @@ import org.lwjgl.opengl.GL30;
 import shaders.EntityShader;
 import shaders.GUIshader;
 import toolbox.Maths;
+import universe.UniverseHandler;
 import entity.BasicEntity;
 import entity.GUI;
 import entity.Light;
@@ -30,12 +31,14 @@ public class Renderer {
 	private MainLoop loop;
 	private Matrix4f projmat;
 	private GUIshader guishader;
+	private UniverseHandler unihand;
 
-	public Renderer(EntityShader shader, GUIshader guishader, MainLoop loop) {
+	public Renderer(MainLoop loop, UniverseHandler unihand) {
 		super();
-		this.shader = shader;
-		this.guishader = guishader;
+		this.shader = new EntityShader();
+		this.guishader = new GUIshader();
 		this.loop = loop;
+		this.unihand=unihand;
 		GL11.glEnable(GL11.GL_CULL_FACE);
 		GL11.glCullFace(GL11.GL_BACK);
 		createProj();

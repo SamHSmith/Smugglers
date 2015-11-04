@@ -48,6 +48,7 @@ import sound.Sound;
 import sound.Source;
 import textures.ModelTexture;
 import toolbox.Maths;
+import universe.UniverseHandler;
 import entity.BasicEntity;
 import entity.GUI;
 import entity.Light;
@@ -86,6 +87,7 @@ public class MainLoop {
 	Listener listen;
 	Server ser;
 	Client cl;
+	private UniverseHandler unihand;
 
 	/*
 	 * TODO Add Arraylist of Enum keys add checking of key press to change to
@@ -101,7 +103,8 @@ public class MainLoop {
 	public static int WIDTH = 1280;
 	public static int HEIGHT = 720;
 
-	public MainLoop() {
+	public MainLoop(UniverseHandler unihand) {
+		this.unihand=unihand;
 		createDisplay();
 		init();
 		loop();
@@ -139,11 +142,8 @@ public class MainLoop {
 	}
 
 	private void init() {
-
-		loader = new ModelLoader();
-		shader = new EntityShader();
 		guishader = new GUIshader();
-		ren = new Renderer(shader, guishader, this);
+		ren = new Renderer(this,unihand);
 		lights = new ArrayList<Light>();
 		entitys = new ArrayList<BasicEntity>();
 		guis = new ArrayList<GUI>();
@@ -153,43 +153,6 @@ public class MainLoop {
 			keys.add(Key.False);
 		}
 		
-		int mult=JOptionPane.showConfirmDialog(null, "Please Confirm this if you want to be a client", "Client or Server?", JOptionPane.YES_NO_OPTION);
-		
-		if(mult==0){
-			cl=new Client("localhost", 7985);
-		}else if(mult==1){
-			ser=new Server(7985);
-		}
-		
-		warp=new Warp(new Vector3f(), new Vector3f(), 0, 0, 0, 1, 4, 2);
-
-		RawModel model = ObjFileLoader.loadObjModel("Rocket", loader);
-		ModelTexture texture = new ModelTexture(
-				loader.loadTexture("DaddyRocketText"));
-		Texturedmodel tmodel = new Texturedmodel(model, texture);
-
-		entitys.add(new PhiEntity(new Vector3f(0, 0, 0), new Vector3f(0, 0,
-				0.01f), new Vector3f(0.01f, 0.1f, 0), 0, 0, 0, 0.5f, tmodel));
-
-		lights.add(new Light(new Vector3f(), new Vector3f(0, 0, 0), 0, 0, 0,
-				0.1f, new Vector3f(0, 1, 1), tmodel));
-		entitys.add(lights.get(0));
-
-		lights.add(new Light(new Vector3f(-0.02f, -0.01f, 0.02f), new Vector3f(
-				0, 0, 0), 0, 0, 0, 0.1f, new Vector3f(1, 1, 0), tmodel));
-		entitys.add(lights.get(1));
-
-		lights.add(new Light(new Vector3f(0.02f, 0.01f, 0.02f), new Vector3f(0,
-				0, 0), 0, 0, 0, 0.1f, new Vector3f(1, 0, 0), tmodel,
-				new Vector3f(1, 0.002f, 0.002f)));
-		entitys.add(lights.get(2));
-
-		model = ObjFileLoader.loadObjModel("Buss", loader);
-		texture = new ModelTexture(loader.loadTexture("EagleTexture"));
-		tmodel = new Texturedmodel(model, texture);
-
-		guis.add(new GUI(new Vector3f(9f, -9f, 0), 0, 0, 0, 0.07f, tmodel, true));
-
 		kc = new GLFWKeyCallback() {
 			@Override
 			public void invoke(long arg0, int key, int arg2, int action,
@@ -218,16 +181,6 @@ public class MainLoop {
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
 
-		try {
-			sound = new Sound("res/Sound/Guitar.wav");
-			bigRocket = new Source(viewpos, new Vector3f(), 5);
-			listen = new Listener();
-			listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
-					viewroty, viewrotz);
-		} catch (FileNotFoundException e) {
-			System.err.println("Error while loading sound");
-		}
-
 	}
 
 	private void loop() {
@@ -254,7 +207,7 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(entitys, guis, lights, warp);
+				ren.render(unihand.entitys, unihand.guis, unihand.lights, unihand.warp);
 				fps++;
 				shouldrender = false;
 			}
@@ -272,9 +225,6 @@ public class MainLoop {
 				fps = 0;
 				fpstimer = System.currentTimeMillis();
 				
-				if(ser!=null){
-					ser.send("Hello");
-				}
 			}
 
 		}
@@ -283,10 +233,7 @@ public class MainLoop {
 	private void tick() {
 		listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
 				viewroty, viewrotz);
-		bigRocket.update(entitys.get(0).getPosition(), entitys.get(0)
-				.getVelocity(), 5);
-		updatepositions();
-		keyaction();
+		unihand.updatepositions();
 		updateKeys();
 
 		if (mousedis) {
@@ -296,16 +243,7 @@ public class MainLoop {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
 		}
-		if(ser!=null){
-			
-		}else {
-			try {
-				cl.Handleinput(entitys, guis);
-			} catch (IOException e) {
-				System.err.println("ERRROR: "+e.getLocalizedMessage());
-				e.printStackTrace();
-			}
-		}
+		
 	}
 
 	public void updateKeys() {
@@ -374,80 +312,6 @@ public class MainLoop {
 
 	}
 
-	public void keyaction() {
-		Vector3f dist;
-		if (keys.get(KeyValues.keyW) == Key.True) {
-			dist = new Vector3f(0, 0, -0.02f);
-			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
-					(float) Math.toRadians(-viewrotx),
-					(float) Math.toRadians(-viewroty),
-					(float) Math.toRadians(viewrotz)), dist);
-			viewpos.x += vec.x;
-			viewpos.y += vec.y;
-			viewpos.z += vec.z;
-		}
-		if (keys.get(KeyValues.keyS) == Key.True) {
-			dist = new Vector3f(0, 0, 0.02f);
-			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
-					(float) Math.toRadians(-viewrotx),
-					(float) Math.toRadians(-viewroty),
-					(float) Math.toRadians(viewrotz)), dist);
-			viewpos.x += vec.x;
-			viewpos.y += vec.y;
-			viewpos.z += vec.z;
-		}
-
-		if (keys.get(KeyValues.keyA) == Key.True) {
-			dist = new Vector3f(-0.02f, 0, 0);
-			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
-					(float) Math.toRadians(-viewrotx),
-					(float) Math.toRadians(-viewroty),
-					(float) Math.toRadians(viewrotz)), dist);
-			viewpos.x += vec.x;
-			viewpos.y += vec.y;
-			viewpos.z += vec.z;
-		}
-		if (keys.get(KeyValues.keyD) == Key.True) {
-			dist = new Vector3f(0.02f, 0, 0);
-			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
-					(float) Math.toRadians(-viewrotx),
-					(float) Math.toRadians(-viewroty),
-					(float) Math.toRadians(viewrotz)), dist);
-			viewpos.x += vec.x;
-			viewpos.y += vec.y;
-			viewpos.z += vec.z;
-		}
-		if (keys.get(KeyValues.keySpace) == Key.True) {
-			dist = new Vector3f(0, -0.02f, 0);
-			Vector3f vec = Maths.angleMove(Maths.flippedcreaterotmat(
-					(float) Math.toRadians(-viewrotx),
-					(float) Math.toRadians(-viewroty),
-					(float) Math.toRadians(viewrotz)), dist);
-			viewpos.x += vec.x;
-			viewpos.y += vec.y;
-			viewpos.z += vec.z;
-		}
-		if (keys.get(KeyValues.keyEscape) == Key.Press) {
-			close();
-			System.exit(0);
-		}
-
-		if (keys.get(KeyValues.key1) == Key.Press) {
-			bigRocket.Play(sound, true);
-		}
-		if (keys.get(KeyValues.key1) == Key.Realesed) {
-			bigRocket.Stop(sound);
-		}
-	}
-
-	private void updatepositions() {
-		for (BasicEntity ent : entitys) {
-			ent.getPosition().add(ent.getVelocity());
-			ent.rotate(ent.getRotVelocity().x, ent.getRotVelocity().y,
-					ent.getRotVelocity().z);
-		}
-	}
-
 	private void close() {
 		sound.destroy();
 		bigRocket.Destroy();
@@ -458,10 +322,6 @@ public class MainLoop {
 		al.getDevice().destroy();
 		glfwDestroyWindow(window);
 		glfwTerminate();
-	}
-
-	public static void main(String args[]) {
-		new MainLoop();
 	}
 
 }
