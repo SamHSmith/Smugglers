@@ -27,6 +27,14 @@ public class Maths {
 		return m;
 	}
 	
+	public static Matrix4f createtransmat(Vector3f pos, float width, float height){
+		Matrix4f m = new Matrix4f();
+		m.scale(width, height, 0);
+		m.translate(pos);
+		
+		return m;
+	}
+	
 	public static Matrix4f createrotmat(float rx,float ry ,float rz){
 		Matrix4f m = new Matrix4f();
 		m.rotateX(rx);
@@ -49,7 +57,7 @@ public class Maths {
 	public static Matrix4f setToProjection (Matrix4f m, float near, float far, float fov, float aspectRatio) {
 		if (m==null)
 			m = new Matrix4f();
-		m.perspective(fov, (float)MainLoop.WIDTH/MainLoop.HEIGHT, 0.01f, 100.0f);
+		m.perspective(fov, aspectRatio, near, far);
 		return m;
 	}
 

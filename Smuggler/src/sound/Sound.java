@@ -37,6 +37,8 @@ public class Sound {
 		}
 
 		WaveData waveFile = WaveData.create(new BufferedInputStream(fin));
+		System.out.println("Loading "+ path);
+		System.out.println("Got Format: "+waveFile.format+" Data: "+waveFile.data+" Samplerate: "+waveFile.samplerate);
 		AL10.alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
 		
 

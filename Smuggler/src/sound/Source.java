@@ -61,6 +61,16 @@ public class Source {
 		AL10.alSourceStop(source);
 		AL10.alSourcei(source, AL10.AL_BUFFER, 0);
 	}
+	
+	public boolean isPlaying(){
+		int playing = 0;
+		AL10.alSourcei(source, AL10.AL_PLAYING, playing);
+		
+		if(playing==AL10.AL_TRUE){
+			return true;
+		}
+		return false;
+	}
 
 	public void Destroy() {
 		AL10.alDeleteSources(source);

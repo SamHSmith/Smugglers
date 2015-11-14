@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import org.joml.Vector3f;
 
 import entity.BasicEntity;
-import entity.GUI;
+import gui.GUI;
 
 public class Client implements NetworkValues{
 	Socket sock;

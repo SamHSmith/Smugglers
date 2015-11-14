@@ -19,12 +19,13 @@ public class ObjFileLoader {
 	public static float[] coll;
 	public static int[] indecies;
 
-	public static void loadvaribles(String filename, ModelLoader loader) {
+	public static void loadvaribles(String filename, ModelLoader loader, boolean col) {
 		FileReader fr = null;
 		FileReader collfile = null;
 		try {
 			fr = new FileReader(new File("res/Model/" + filename + "/"
 					+ "model" + ".obj"));
+			if(col)
 			collfile = new FileReader(new File("res/Model/" + filename + "/"
 					+ "coll" + ".cof"));
 
@@ -161,8 +162,8 @@ public class ObjFileLoader {
 		ObjFileLoader.indecies = indesiecarray;
 	}
 
-	public static RawModel loadObjModel(String filename, ModelLoader loader) {
-		loadvaribles(filename, loader);
+	public static RawModel loadObjModel(String filename, ModelLoader loader,boolean col) {
+		loadvaribles(filename, loader,col);
 
 		return loader.LoadToVAO(vertecies, texturecoords, normals, indecies,
 				coll);

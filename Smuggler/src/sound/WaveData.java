@@ -126,7 +126,7 @@ public class WaveData {
 			return create(
 				AudioSystem.getAudioInputStream(is));
 		} catch (Exception e) {
-			org.lwjgl.LWJGLUtil.log("Unable to create from inputstream, " + e.getMessage());
+			System.out.println(("Unable to create from inputstream, " + e.getMessage()));
 			return null;
 		}		
 	}	

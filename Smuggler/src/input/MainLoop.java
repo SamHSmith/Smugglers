@@ -34,12 +34,16 @@ import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
+import org.lwjgl.glfw.GLFWMouseButtonCallback;
+import org.lwjgl.glfw.GLFWWindowSizeCallback;
+import org.lwjgl.glfw.GLFWgammaramp;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GLContext;
 
+import controler.UniverseHandler;
 import render.Renderer;
 import shaders.EntityShader;
 import shaders.GUIshader;
@@ -48,12 +52,12 @@ import sound.Sound;
 import sound.Source;
 import textures.ModelTexture;
 import toolbox.Maths;
-import universe.UniverseHandler;
 import entity.BasicEntity;
-import entity.GUI;
 import entity.Light;
 import entity.PhiEntity;
 import entity.Warp;
+import fontRendering.TextMaster;
+import gui.GUI;
 
 public class MainLoop {
 
@@ -65,6 +69,8 @@ public class MainLoop {
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	GLFWKeyCallback kc;
+	GLFWWindowSizeCallback wsc;
+	GLFWMouseButtonCallback mbc;
 	ALContext al;
 	long window;
 	ModelLoader loader;
@@ -74,26 +80,17 @@ public class MainLoop {
 	Warp warp;
 	ArrayList<BasicEntity> entitys;
 	ArrayList<GUI> guis;
-	public float viewrotx = 0;
-	public float viewroty = 0;
+	public float cameray = 0;
+	public float camerax = 0;
 	ArrayList<Light> lights;
 	public Vector3f viewpos = new Vector3f();
 	public ArrayList<Key> keys;
-	public float viewrotz;
-	public static boolean mousedis = true;
+	public float cameraz;
+	public static boolean mousedis = false;
 	public static int mousedistimer = 0;
-	Sound sound;
-	Source bigRocket;
 	Listener listen;
-	Server ser;
-	Client cl;
 	private UniverseHandler unihand;
-
-	/*
-	 * TODO Add Arraylist of Enum keys add checking of key press to change to
-	 * true and Realesed to False No commands is allowed to be done in GLFW it
-	 * all has to be done in key action
-	 */
+	public Mouse mouse;
 
 	/**
 	 * This class is the main class that uses all the other classes and maneges
@@ -105,6 +102,10 @@ public class MainLoop {
 
 	public MainLoop(UniverseHandler unihand) {
 		this.unihand=unihand;
+	}
+	
+	
+	public void start(){
 		createDisplay();
 		init();
 		loop();
@@ -125,13 +126,14 @@ public class MainLoop {
 			glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
+		
 		al = ALContext.create();
 		// Make the context current
 		al.makeCurrent();
 		ALCapabilities capabilities = al.getCapabilities();
-
+		
 		AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
-
+		
 		if (!capabilities.OpenAL10)
 			throw new RuntimeException("OpenAL Context Creation failed");
 
@@ -144,12 +146,13 @@ public class MainLoop {
 	private void init() {
 		guishader = new GUIshader();
 		ren = new Renderer(this,unihand);
-		lights = new ArrayList<Light>();
-		entitys = new ArrayList<BasicEntity>();
-		guis = new ArrayList<GUI>();
 		keys = new ArrayList<Key>();
-
-		for (int i = 0; i < 50; i++) {
+		listen=new Listener();
+		loader= new ModelLoader();
+		unihand.loader=loader;
+		mouse= new Mouse(false, false, false);
+		
+		for (int i = 0; i < 256; i++) {
 			keys.add(Key.False);
 		}
 		
@@ -170,17 +173,50 @@ public class MainLoop {
 
 			@Override
 			public void invoke(long arg0, double xpos, double ypos) {
-				viewroty = (float) xpos * 180 / (WIDTH);
-				viewrotx = -((float) ypos * -180 / (HEIGHT));
-
+				camerax = (float) xpos * 180 / (WIDTH);
+				cameray = -((float) ypos * -180 / (HEIGHT));
+				
+				mouse.x= (float) ((xpos * 2 / (WIDTH))-1);
+				mouse.y= (float) -((ypos * 2 / (HEIGHT))-1);
+				
 			}
 		};
-
+		
+		wsc= new GLFWWindowSizeCallback() {
+			
+			@Override
+			public void invoke(long window, int nwidth, int nheight) {
+				WIDTH=nwidth;
+				HEIGHT=nheight;
+				ren.createProj();
+				glfwMakeContextCurrent(window);
+				GLContext.createFromCurrent();
+				glfwSwapInterval(1);
+			}
+		};
+		
+		mbc= new GLFWMouseButtonCallback() {
+			
+			@Override
+			public void invoke(long window, int button, int action, int mods) {
+				if(action==GLFW.GLFW_PRESS){
+					click(button,true);
+				}else{
+					click(button,false);
+				}
+			}
+		};
+		
+		
+		GLFW.glfwSetMouseButtonCallback(window, mbc);
+		GLFW.glfwSetWindowSizeCallback(window, wsc);
 		GLFW.glfwSetKeyCallback(window, kc);
 		GLFW.glfwSetCursorPosCallback(window, cpc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
-
+		unihand.init();
+		
+		listen= new Listener();
 	}
 
 	private void loop() {
@@ -231,10 +267,10 @@ public class MainLoop {
 	}
 
 	private void tick() {
-		listen.UpdateListenerValuse(viewpos, new Vector3f(), viewrotx,
-				viewroty, viewrotz);
+		listen.UpdateListenerValuse(viewpos, new Vector3f(), cameray,
+				camerax, cameraz);
 		unihand.updatepositions();
-		updateKeys();
+		
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -242,6 +278,20 @@ public class MainLoop {
 		} else {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
+		}
+		unihand.tick();
+		updateKeys();
+	}
+	
+	public void click(int button, boolean setto){
+		if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+			mouse.setRight(setto);
+		}
+		if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+			mouse.setLeft(setto);
+		}
+		if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
+			mouse.setMiddle(setto);
 		}
 		
 	}
@@ -255,6 +305,10 @@ public class MainLoop {
 				keys.set(i, Key.False);
 			}
 		}
+	}
+	
+	public Key getKey(int id){
+		return keys.get(id);
 	}
 
 	public void ckeckkeys(int key, boolean setto) {
@@ -312,16 +366,23 @@ public class MainLoop {
 
 	}
 
-	private void close() {
-		sound.destroy();
-		bigRocket.Destroy();
+	public void close() {
 		loader.cleanup();
-		shader.cleanup();
-		guishader.cleanup();
+		TextMaster.cleanUp();
+		ren.getShader().cleanup();
+		ren.getGuishader().cleanup();
 		al.destroy();
 		al.getDevice().destroy();
 		glfwDestroyWindow(window);
 		glfwTerminate();
+		System.exit(0);
 	}
 
+	public Renderer getRen() {
+		return ren;
+	}
+
+	public void setRen(Renderer ren) {
+		this.ren = ren;
+	}
 }

@@ -15,8 +15,8 @@ import java.util.ArrayList;
 import org.joml.Vector3f;
 
 import entity.BasicEntity;
-import entity.GUI;
 import entity.PhiEntity;
+import gui.GUI;
 
 public class Server implements Runnable,NetworkValues {
 
