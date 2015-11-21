@@ -13,20 +13,9 @@ import static org.lwjgl.glfw.GLFW.glfwWindowShouldClose;
 import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.Iterator;
-
-import javax.swing.JEditorPane;
-import javax.swing.JOptionPane;
 
 import loading.ModelLoader;
-import loading.ObjFileLoader;
-import models.RawModel;
-import models.Texturedmodel;
-import net.Client;
-import net.Server;
 
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
@@ -37,25 +26,19 @@ import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
 import org.lwjgl.glfw.GLFWMouseButtonCallback;
 import org.lwjgl.glfw.GLFWWindowSizeCallback;
-import org.lwjgl.glfw.GLFWgammaramp;
 import org.lwjgl.openal.AL10;
 import org.lwjgl.openal.AL11;
 import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GLContext;
 
-import controler.UniverseHandler;
 import render.Renderer;
 import shaders.EntityShader;
 import shaders.GUIshader;
 import sound.Listener;
-import sound.Sound;
-import sound.Source;
-import textures.ModelTexture;
-import toolbox.Maths;
+import controler.UniverseHandler;
 import entity.BasicEntity;
 import entity.Light;
-import entity.PhiEntity;
 import entity.Warp;
 import fontRendering.TextMaster;
 import gui.GUI;
@@ -84,7 +67,7 @@ public class MainLoop {
 	public float cameray = 0;
 	public float camerax = 0;
 	ArrayList<Light> lights;
-	public Vector3f viewpos = new Vector3f(0,0,0);
+	public Vector3f viewpos = new Vector3f();
 	public static ArrayList<Key> keys;
 	public float cameraz;
 	public static boolean mousedis = false;
