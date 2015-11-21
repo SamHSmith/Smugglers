@@ -168,9 +168,11 @@ public class GUI implements BasicEntity {
 	public void setSubGUIs(ArrayList<GUI> subGUIs) {
 		this.subGUIs = subGUIs;
 	}
-	public void update(Mouse mouse){
+	public void update(Mouse mouse, GameState state){
+		if(state==getShowstate()||GameState.All==getShowstate()){
 		for(GUI gui:subGUIs){
-			gui.update(mouse);
+			gui.update(mouse, state);
+		}
 		}
 	}
 

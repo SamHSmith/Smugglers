@@ -6,28 +6,24 @@ import fontRendering.TextMaster;
 import gui.GUI;
 import input.MainLoop;
 
-import java.sql.PreparedStatement;
 import java.util.ArrayList;
 
 import models.RawModel;
 import models.Texturedmodel;
 
 import org.joml.Matrix4f;
-import org.joml.Vector3f;
 import org.lwjgl.opengl.GL11;
-import org.lwjgl.opengl.GL12;
 import org.lwjgl.opengl.GL13;
-import org.lwjgl.opengl.GL14;
-import org.lwjgl.opengl.GL15;
 import org.lwjgl.opengl.GL20;
-import org.lwjgl.opengl.GL21;
 import org.lwjgl.opengl.GL30;
+import org.lwjgl.opengl.GL32;
 
-import controler.GameState;
-import controler.UniverseHandler;
 import shaders.EntityShader;
 import shaders.GUIshader;
+import shaders.ShaderProgram;
 import toolbox.Maths;
+import controler.GameState;
+import controler.UniverseHandler;
 import entity.BasicEntity;
 import entity.Light;
 import entity.Warp;
@@ -35,10 +31,12 @@ import entity.Warp;
 public class Renderer {
 
 	private EntityShader shader;
+	private int fbo;
 	private MainLoop loop;
 	private Matrix4f projmat;
 	private GUIshader guishader;
 	private UniverseHandler unihand;
+	public static final int shadow_Map_Width_And_Height = 512;
 
 	public Renderer(MainLoop loop, UniverseHandler unihand) {
 		super();
@@ -50,43 +48,75 @@ public class Renderer {
 		GL11.glEnable(GL11.GL_BLEND);
 		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 		GL11.glCullFace(GL11.GL_BACK);
-		createProj();
+		createProj(MainLoop.WIDTH, MainLoop.HEIGHT);
+
+		fbo = GL30.glGenFramebuffers();
 
 		shader.start();
 		shader.loadprojmat(projmat);
 		shader.stop();
 	}
 
-	public void render(ArrayList<BasicEntity> Objects, ArrayList<GUI> gUIs,
+	public void render(ArrayList<BasicEntity> ents, ArrayList<GUI> gUIs,
 			ArrayList<Light> lights, Warp warp) {
 		GL11.glEnable(GL11.GL_DEPTH_TEST);
-		GL11.glEnable(GL11.GL_BLEND);
+		GL11.glDisable(GL11.GL_BLEND);
 		GL11.glClear(GL_COLOR_BUFFER_BIT | GL11.GL_DEPTH_BUFFER_BIT);
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClearDepth(1);
 
-		for (int i = 0; i < Objects.size(); i++) {
-			BasicEntity current = Objects.get(i);
+			GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fbo);
 
-			shader.start();
+			int fb = 0;
 
-			shader.loadTransmat(Maths.createtransmat(current.getPosition(),
-					current.getScale()));
+			fb = GL30.glGenRenderbuffers();
+			GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, fb);
+			GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER,
+					GL30.GL_DEPTH_COMPONENT32F, shadow_Map_Width_And_Height,
+					shadow_Map_Width_And_Height);
+			GL30.glFramebufferRenderbuffer(GL30.GL_DRAW_FRAMEBUFFER,
+					GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, fb);
 
-			shader.loadviewmat(Maths.createnegativetransmat(loop.viewpos));
-			shader.loadrotmat(Maths.createrotmat(current.getRx(),
-					current.getRy(), current.getRz()));
-			shader.loadviewrotmat(Maths.createrotmat(
-					(float) Math.toRadians(loop.cameray),
-					(float) Math.toRadians(loop.camerax), 0));
-			shader.loadlights(lights);
+			int inGame;
 
-			shader.loadWarp(warp);
+			inGame = GL11.glGenTextures();
+			GL11.glBindTexture(GL11.GL_TEXTURE_2D, inGame);
+			GL11.glTexImage2D(GL11.GL_TEXTURE_2D, 0, GL11.GL_RGBA,
+					shadow_Map_Width_And_Height, shadow_Map_Width_And_Height,
+					0, GL11.GL_RGBA, GL11.GL_FLOAT, 0);
 
-			shader.stop();
+			GL32.glFramebufferTexture(GL30.GL_DRAW_FRAMEBUFFER,
+					GL30.GL_DEPTH_ATTACHMENT, inGame, 0);
 
-			renderEntity(current);
-		}
+			GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+
+			createProj(MainLoop.WIDTH, MainLoop.HEIGHT);
+
+			for (int i = 0; i < ents.size(); i++) {
+				BasicEntity current = ents.get(i);
+
+				shader.start();
+
+				shader.loadTransmat(Maths.createtransmat(current.getPosition(),
+						current.getScale()));
+
+				shader.loadviewmat(Maths.createnegativetransmat(loop.viewpos));
+				shader.loadrotmat(Maths.createrotmat(current.getRx(),
+						current.getRy(), current.getRz()));
+				shader.loadviewrotmat(Maths.createrotmat(
+						(float) Math.toRadians(loop.cameray),
+						(float) Math.toRadians(loop.camerax),
+						(float) Math.toRadians(loop.cameraz)));
+				shader.loadlights(lights);
+
+				shader.loadWarp(warp);
+
+				shader.stop();
+
+				renderEntity(current, shader);
+			}
+
+		GL11.glEnable(GL11.GL_BLEND);
 
 		GL11.glDisable(GL11.GL_DEPTH_TEST);
 
@@ -102,25 +132,28 @@ public class Renderer {
 		if (gui.getShowstate() == unihand.getState()
 				|| gui.getShowstate() == GameState.All) {
 
-			RawModel rawmodel = gui.getModel().getModel();
-			Texturedmodel model = gui.getModel();
-			guishader.start();
+			if (gui.getModel() != null) {
 
-			guishader.loadmatices(Maths.createtransmat(gui.getPosition(),
-					gui.getWidth(), gui.getHeight()), Maths.createrotmat(
-					gui.getRx(), (float) gui.getRy(), (float) gui.getRz()));
+				RawModel rawmodel = gui.getModel().getModel();
+				Texturedmodel model = gui.getModel();
+				guishader.start();
 
-			GL30.glBindVertexArray(rawmodel.getVaoid());
-			GL20.glEnableVertexAttribArray(0);
-			GL20.glEnableVertexAttribArray(1);
-			GL13.glActiveTexture(GL13.GL_TEXTURE0);
-			GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTextID());
-			GL11.glDrawElements(GL_TRIANGLES, rawmodel.getVertexCount(),
-					GL11.GL_UNSIGNED_INT, 0);
-			GL20.glDisableVertexAttribArray(0);
-			GL20.glDisableVertexAttribArray(1);
-			GL30.glBindVertexArray(0);
-			guishader.stop();
+				guishader.loadmatices(Maths.createtransmat(gui.getPosition(),
+						gui.getWidth(), gui.getHeight()), Maths.createrotmat(
+						gui.getRx(), gui.getRy(), gui.getRz()));
+
+				GL30.glBindVertexArray(rawmodel.getVaoid());
+				GL20.glEnableVertexAttribArray(0);
+				GL20.glEnableVertexAttribArray(1);
+				GL13.glActiveTexture(GL13.GL_TEXTURE0);
+				GL11.glBindTexture(GL11.GL_TEXTURE_2D, model.getTextID());
+				GL11.glDrawElements(GL_TRIANGLES, rawmodel.getVertexCount(),
+						GL11.GL_UNSIGNED_INT, 0);
+				GL20.glDisableVertexAttribArray(0);
+				GL20.glDisableVertexAttribArray(1);
+				GL30.glBindVertexArray(0);
+				guishader.stop();
+			}
 
 			for (GUI currgui : gui.getSubGUIs()) {
 				renderGUI(currgui);
@@ -129,7 +162,7 @@ public class Renderer {
 		}
 	}
 
-	private void renderEntity(BasicEntity ent) {
+	private void renderEntity(BasicEntity ent, ShaderProgram shader) {
 
 		RawModel rawmodel = ent.getModel().getModel();
 		Texturedmodel model = ent.getModel();
@@ -147,11 +180,10 @@ public class Renderer {
 		GL20.glDisableVertexAttribArray(2);
 		GL30.glBindVertexArray(0);
 		shader.stop();
-
 	}
 
-	public void createProj() {
-		float aspect = loop.WIDTH / loop.HEIGHT;
+	public void createProj(int width, int height) {
+		float aspect = width / height;
 
 		projmat = new Matrix4f();
 
@@ -162,7 +194,7 @@ public class Renderer {
 		shader.loadprojmat(projmat);
 		shader.stop();
 
-		GL11.glViewport(0, 0, loop.WIDTH, loop.HEIGHT);
+		GL11.glViewport(0, 0, width, height);
 
 	}
 

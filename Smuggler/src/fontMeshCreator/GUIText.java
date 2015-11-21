@@ -29,8 +29,6 @@ public class GUIText {
 
 	private boolean centerText = false;
 	
-	public GameState showstate;
-	//TODO add show state
 
 	/**
 	 * Creates a new text, loads the text's quads into a VAO, and adds the text
@@ -58,14 +56,13 @@ public class GUIText {
 	 *            - whether the text should be centered or not.
 	 */
 	public GUIText(String text, float fontSize, FontType font, Vector2f position, float maxLineLength,
-			boolean centered,GameState showstate) {
+			boolean centered) {
 		this.textString = text;
 		this.fontSize = fontSize;
 		this.font = font;
 		this.position = position;
 		this.lineMaxSize = maxLineLength;
 		this.centerText = centered;
-		this.showstate=showstate;
 		TextMaster.loadText(this);
 	}
 

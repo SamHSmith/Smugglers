@@ -33,7 +33,7 @@ public class ObjFileLoader {
 			System.err.println("Error while loading " + filename);
 			System.err.println("remmember this does not mean that nothing was loadable");
 		}
-		
+		try{
 		BufferedReader br = new BufferedReader(fr);
 		String line = null;
 		ArrayList<Vector3f> vertices = new ArrayList<Vector3f>();
@@ -160,6 +160,9 @@ public class ObjFileLoader {
 		ObjFileLoader.texturecoords = texturearray;
 		ObjFileLoader.normals = normalarray;
 		ObjFileLoader.indecies = indesiecarray;
+		}catch(NullPointerException e){
+			//TODO do catchh
+		}
 	}
 
 	public static RawModel loadObjModel(String filename, ModelLoader loader,boolean col) {

@@ -31,6 +31,7 @@ import net.Server;
 import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
+import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
 import org.lwjgl.glfw.GLFWErrorCallback;
 import org.lwjgl.glfw.GLFWKeyCallback;
@@ -62,15 +63,15 @@ import gui.GUI;
 public class MainLoop {
 
 	public static final float FOV = 70;
-	public static final float NEARPLANE = 0.1f;
+	public static final float NEARPLANE = 0.01f;
 	public static final float FARPLANE = 1000;
-	public static final float SENSITYVITY = 30;
 	GLFWCursorPosCallback cpc;
 	private GLFWErrorCallback errorCallback = Callbacks
 			.errorCallbackPrint(System.err);
 	GLFWKeyCallback kc;
 	GLFWWindowSizeCallback wsc;
 	GLFWMouseButtonCallback mbc;
+	GLFWCharCallback cc;
 	ALContext al;
 	long window;
 	ModelLoader loader;
@@ -83,14 +84,15 @@ public class MainLoop {
 	public float cameray = 0;
 	public float camerax = 0;
 	ArrayList<Light> lights;
-	public Vector3f viewpos = new Vector3f();
-	public ArrayList<Key> keys;
+	public Vector3f viewpos = new Vector3f(0,0,0);
+	public static ArrayList<Key> keys;
 	public float cameraz;
 	public static boolean mousedis = false;
 	public static int mousedistimer = 0;
 	Listener listen;
 	private UniverseHandler unihand;
 	public Mouse mouse;
+	private static Typestream ts;
 
 	/**
 	 * This class is the main class that uses all the other classes and maneges
@@ -101,11 +103,10 @@ public class MainLoop {
 	public static int HEIGHT = 720;
 
 	public MainLoop(UniverseHandler unihand) {
-		this.unihand=unihand;
+		this.unihand = unihand;
 	}
-	
-	
-	public void start(){
+
+	public void start() {
 		createDisplay();
 		init();
 		loop();
@@ -126,14 +127,14 @@ public class MainLoop {
 			glfwTerminate();
 			throw new RuntimeException("Failed to create the GLFW window");
 		}
-		
+
 		al = ALContext.create();
 		// Make the context current
 		al.makeCurrent();
 		ALCapabilities capabilities = al.getCapabilities();
-		
+
 		AL10.alDistanceModel(AL11.AL_LINEAR_DISTANCE_CLAMPED);
-		
+
 		if (!capabilities.OpenAL10)
 			throw new RuntimeException("OpenAL Context Creation failed");
 
@@ -145,22 +146,33 @@ public class MainLoop {
 
 	private void init() {
 		guishader = new GUIshader();
-		ren = new Renderer(this,unihand);
+		ren = new Renderer(this, unihand);
 		keys = new ArrayList<Key>();
-		listen=new Listener();
-		loader= new ModelLoader();
-		unihand.loader=loader;
-		mouse= new Mouse(false, false, false);
-		
-		for (int i = 0; i < 256; i++) {
+		listen = new Listener();
+		loader = new ModelLoader();
+		unihand.loader = loader;
+		mouse = new Mouse(false, false, false);
+
+		for (int i = 0; i < 1000; i++) {
 			keys.add(Key.False);
 		}
-		
+
 		kc = new GLFWKeyCallback() {
 			@Override
 			public void invoke(long arg0, int key, int arg2, int action,
 					int arg4) {
 				if (action == GLFW.GLFW_PRESS) {
+					if (key == GLFW.GLFW_KEY_BACKSPACE) {
+						if (ts != null) {
+							ts.backspace();
+						}
+					}
+					if (key == GLFW.GLFW_KEY_ENTER) {
+						if (ts != null) {
+							ts.enter();
+						}
+					}
+					
 					ckeckkeys(key, true);
 				}
 				if (action == GLFW.GLFW_RELEASE) {
@@ -175,39 +187,50 @@ public class MainLoop {
 			public void invoke(long arg0, double xpos, double ypos) {
 				camerax = (float) xpos * 180 / (WIDTH);
 				cameray = -((float) ypos * -180 / (HEIGHT));
-				
-				mouse.x= (float) ((xpos * 2 / (WIDTH))-1);
-				mouse.y= (float) -((ypos * 2 / (HEIGHT))-1);
-				
+
+				mouse.x = (float) ((xpos * 2 / (WIDTH)) - 1);
+				mouse.y = (float) -((ypos * 2 / (HEIGHT)) - 1);
+
 			}
 		};
-		
-		wsc= new GLFWWindowSizeCallback() {
-			
+
+		wsc = new GLFWWindowSizeCallback() {
+
 			@Override
 			public void invoke(long window, int nwidth, int nheight) {
-				WIDTH=nwidth;
-				HEIGHT=nheight;
-				ren.createProj();
+				WIDTH = nwidth;
+				HEIGHT = nheight;
+				ren.createProj(nwidth, nheight);
 				glfwMakeContextCurrent(window);
 				GLContext.createFromCurrent();
 				glfwSwapInterval(1);
 			}
 		};
-		
-		mbc= new GLFWMouseButtonCallback() {
-			
+
+		mbc = new GLFWMouseButtonCallback() {
+
 			@Override
 			public void invoke(long window, int button, int action, int mods) {
-				if(action==GLFW.GLFW_PRESS){
-					click(button,true);
-				}else{
-					click(button,false);
+				if (action == GLFW.GLFW_PRESS) {
+					click(button, true);
+				} else {
+					click(button, false);
 				}
 			}
 		};
-		
-		
+
+		cc = new GLFWCharCallback() {
+
+			@Override
+			public void invoke(long arg0, int charecter) {
+				String s = Character.toString((char) charecter);
+				if (ts != null) {
+					ts.type(s);
+				}
+			}
+		};
+
+		GLFW.glfwSetCharCallback(window, cc);
 		GLFW.glfwSetMouseButtonCallback(window, mbc);
 		GLFW.glfwSetWindowSizeCallback(window, wsc);
 		GLFW.glfwSetKeyCallback(window, kc);
@@ -215,8 +238,8 @@ public class MainLoop {
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
 		unihand.init();
-		
-		listen= new Listener();
+
+		listen = new Listener();
 	}
 
 	private void loop() {
@@ -243,7 +266,8 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(unihand.entitys, unihand.guis, unihand.lights, unihand.warp);
+				ren.render(unihand.entitys, unihand.guis, unihand.lights,
+						unihand.warp);
 				fps++;
 				shouldrender = false;
 			}
@@ -253,24 +277,22 @@ public class MainLoop {
 
 			// Fps Timer
 
-			if (System.currentTimeMillis() - fpstimer > 1000) {
+			if (System.currentTimeMillis() - fpstimer > 10000) {
 				System.out.println();
-				System.out.println(updates + " :ticks fps: " + fps);
+				System.out.println(updates/10 + " :ticks fps: " + fps/10);
 				System.out.println();
 				updates = 0;
 				fps = 0;
 				fpstimer = System.currentTimeMillis();
-				
+
 			}
 
 		}
 	}
 
 	private void tick() {
-		listen.UpdateListenerValuse(viewpos, new Vector3f(), cameray,
-				camerax, cameraz);
-		unihand.updatepositions();
-		
+		listen.UpdateListenerValuse(viewpos, new Vector3f(), cameray, camerax,
+				cameraz);
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -279,21 +301,22 @@ public class MainLoop {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
 		}
+		
 		unihand.tick();
 		updateKeys();
 	}
-	
-	public void click(int button, boolean setto){
-		if(button==GLFW.GLFW_MOUSE_BUTTON_RIGHT){
+
+	public void click(int button, boolean setto) {
+		if (button == GLFW.GLFW_MOUSE_BUTTON_RIGHT) {
 			mouse.setRight(setto);
 		}
-		if(button==GLFW.GLFW_MOUSE_BUTTON_LEFT){
+		if (button == GLFW.GLFW_MOUSE_BUTTON_LEFT) {
 			mouse.setLeft(setto);
 		}
-		if(button==GLFW.GLFW_MOUSE_BUTTON_MIDDLE){
+		if (button == GLFW.GLFW_MOUSE_BUTTON_MIDDLE) {
 			mouse.setMiddle(setto);
 		}
-		
+
 	}
 
 	public void updateKeys() {
@@ -306,64 +329,17 @@ public class MainLoop {
 			}
 		}
 	}
-	
-	public Key getKey(int id){
+
+	public static Key getKey(int id) {
 		return keys.get(id);
 	}
 
 	public void ckeckkeys(int key, boolean setto) {
-		if (key == GLFW.GLFW_KEY_W) {
-			if (setto) {
-				keys.set(KeyValues.keyW, Key.Press);
-			} else {
-				keys.set(KeyValues.keyW, Key.Realesed);
-			}
+		if (setto) {
+			keys.set(key, Key.Press);
+		} else {
+			keys.set(key, Key.Realesed);
 		}
-		if (key == GLFW.GLFW_KEY_S) {
-			if (setto) {
-				keys.set(KeyValues.keyS, Key.Press);
-			} else {
-				keys.set(KeyValues.keyS, Key.Realesed);
-			}
-		}
-
-		if (key == GLFW.GLFW_KEY_A) {
-			if (setto) {
-				keys.set(KeyValues.keyA, Key.Press);
-			} else {
-				keys.set(KeyValues.keyA, Key.Realesed);
-			}
-		}
-		if (key == GLFW.GLFW_KEY_D) {
-			if (setto) {
-				keys.set(KeyValues.keyD, Key.Press);
-			} else {
-				keys.set(KeyValues.keyD, Key.Realesed);
-			}
-		}
-		if (key == GLFW.GLFW_KEY_SPACE) {
-			if (setto) {
-				keys.set(KeyValues.keySpace, Key.Press);
-			} else {
-				keys.set(KeyValues.keySpace, Key.Realesed);
-			}
-		}
-		if (key == GLFW.GLFW_KEY_ESCAPE) {
-			if (setto) {
-				keys.set(KeyValues.keyEscape, Key.Press);
-			} else {
-				keys.set(KeyValues.keyEscape, Key.Realesed);
-			}
-		}
-
-		if (key == GLFW.GLFW_KEY_1) {
-			if (setto) {
-				keys.set(KeyValues.key1, Key.Press);
-			} else {
-				keys.set(KeyValues.key1, Key.Realesed);
-			}
-		}
-
 	}
 
 	public void close() {
@@ -376,6 +352,10 @@ public class MainLoop {
 		glfwDestroyWindow(window);
 		glfwTerminate();
 		System.exit(0);
+	}
+
+	public static void setTypeStream(Typestream nts) {
+		ts = nts;
 	}
 
 	public Renderer getRen() {

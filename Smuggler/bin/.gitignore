@@ -1,3 +1,12 @@
+/shaders/
+/sound/
+/textures/
+/toolbox/
+/models/
+/net/
+/org/
+/physics/
+/render/
 /controler/
 /entity/
 /fontMeshCreator/
@@ -5,7 +14,3 @@
 /gui/
 /input/
 /loading/
-/models/
-/net/
-/org/
-/render/
