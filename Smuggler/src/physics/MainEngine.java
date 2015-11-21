@@ -43,6 +43,8 @@ public class MainEngine implements PhysicsEngine {
 
 		BasicEntity entA;
 		BasicEntity entB;
+		// Note - we can have the second loop smaller than the first, since we dont need to 
+		// detect collisions in both directions, nor with ourself
 		int a = unihand.entitys.size();
 		for (int indexA = 0; indexA<unihand.entitys.size();  indexA++) {
 			entA = unihand.entitys.get(indexA); 
