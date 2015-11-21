@@ -63,5 +63,16 @@ public interface BasicEntity {
 	public ArrayList<BasicEntity> getSubObjects();
 
 	public void setSubObjects(ArrayList<BasicEntity> subObjects);
+	
+	public boolean collides(BasicEntity b);
+	
+	public boolean isHard();
+	
+	public Vector3f getPositionOffset(); 
+	
+	public float getRadius();
+	
+	public float getMass();
+	
 
 }

@@ -33,7 +33,7 @@ public class Exicuter extends MTextBox {
 			unihand.entitys.add(new PhiEntity(new Vector3f(Float
 					.parseFloat(com[2]), Float.parseFloat(com[3]), Float
 					.parseFloat(com[4])), new Vector3f(), new Vector3f(), 0, 0,
-					0, 1, UniverseHandler.models[Integer.parseInt(com[1])]));
+					0, 1, 1.0f,UniverseHandler.models[Integer.parseInt(com[1])]));
 			
 			System.out.println("Object was created");
 		}else{

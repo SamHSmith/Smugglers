@@ -16,7 +16,7 @@ public class ObjFileLoader {
 	public static float[] vertecies;
 	public static float[] texturecoords;
 	public static float[] normals;
-	public static float[] coll;
+
 	public static int[] indecies;
 
 	public static void loadvaribles(String filename, ModelLoader loader, boolean col) {
@@ -43,7 +43,6 @@ public class ObjFileLoader {
 		float[] verticesarray = null;
 		float[] normalarray = null;
 		float[] texturearray = null;
-		float[] collarray=null;
 		int[] indesiecarray = null;
 		try {
 
@@ -152,10 +151,10 @@ public class ObjFileLoader {
 				System.out.println("End of coll data");
 			} catch (NullPointerException e1){}
 
-			collarray = new float[coll.size()];
+		
 			
 		}
-		ObjFileLoader.coll=collarray;
+
 		ObjFileLoader.vertecies = verticesarray;
 		ObjFileLoader.texturecoords = texturearray;
 		ObjFileLoader.normals = normalarray;
@@ -168,8 +167,7 @@ public class ObjFileLoader {
 	public static RawModel loadObjModel(String filename, ModelLoader loader,boolean col) {
 		loadvaribles(filename, loader,col);
 
-		return loader.LoadToVAO(vertecies, texturecoords, normals, indecies,
-				coll);
+		return loader.LoadToVAO(vertecies, texturecoords, normals, indecies);
 	}
 
 	public static void prosessvertex(String[] vertexData,

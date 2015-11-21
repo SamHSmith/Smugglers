@@ -139,13 +139,13 @@ public class UniverseHandler {
 		
 		models[100]=tmodel;
 		
-		entitys.add(new PhiEntity(new Vector3f(1.5f,0,5), new Vector3f(-0.001f,0,0), new Vector3f(0f,0,0), 0, 0, 0, 0.4f, models[100]));
-		entitys.add(new PhiEntity(new Vector3f(-1,0.5f,5), new Vector3f(0.001f,0,0), new Vector3f(0f,0,0), 0, 0, 0, 0.4f, models[100]));
+		entitys.add(new PhiEntity(new Vector3f(1.5f,0,5), new Vector3f(-0.001f,0,0), new Vector3f(0f,0,0), 0, 0, 0, 0.4f, 1.0f, models[100]));
+		entitys.add(new PhiEntity(new Vector3f(-1,0.5f,5), new Vector3f(0.001f,0,0), new Vector3f(0f,0,0), 0, 0, 0, 0.4f, 1.0f, models[100]));
 		
 		model = ObjFileLoader.loadObjModel("Grass", loader, false);
 		tmodel = new Texturedmodel(model, text);
 
-		entitys.add(new PhiEntity(new Vector3f(0,-2,0), new Vector3f(), new Vector3f(), 0, 0, 0, 1f, tmodel));
+		entitys.add(new PhiEntity(new Vector3f(0,-2,0), new Vector3f(), new Vector3f(), 0, 0, 0, 1f, 1.0f,tmodel));
 		
 		music.Play(mainmenu, true);
 	}
@@ -155,8 +155,6 @@ public class UniverseHandler {
 		phe.simulate();
 		
 		phe.collision();
-		
-		phe.collisionResponse();
 		
 		
 		///////////////////////////////////////////////////

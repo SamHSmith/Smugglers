@@ -19,10 +19,20 @@ public class PhiEntity implements BasicEntity {
 	float ry = 0;
 	float rz = 0;
 	float scale = 0;
+	float mass = 0;
 	Texturedmodel model = null;
+	
+    // Assuming the object can be approximated as a sphere, this gives the offset of the estimated 
+	// center of that sphere relative to the position stored in @position
+	Vector3f positionOffset;
+	
+	// Assuming the object can be approximated as a sphere, this gives the radius of that sphere
+	float radius = 0;
+	
+
 
 	public PhiEntity(Vector3f position, Vector3f velocity,Vector3f rotVelocity, float rx, float ry,
-			float rz, float scale, Texturedmodel model) {
+			float rz, float scale, float mass, Texturedmodel model) {
 		super();
 		this.position = position;
 		this.velocity = velocity;
@@ -30,9 +40,22 @@ public class PhiEntity implements BasicEntity {
 		this.ry = ry;
 		this.rz = rz;
 		this.scale = scale;
+		this.mass = mass;
 		this.model = model;
 		this.rotVelocity=rotVelocity;
+		calculateCenterAndRadius();
 	}
+	
+	/** 
+	 * Calculate the centre of the object and its radius from its model 
+	 */
+	private void calculateCenterAndRadius() {
+		//TODO Work out properly based on the objects shape and size
+		radius = 2f*scale; // Sam said the spheres were 1m wide
+		positionOffset = new Vector3f(0,0,0);
+		
+	}
+	
 
 	@Override
 	public void move(float x, float y, float z) {
@@ -174,5 +197,50 @@ public class PhiEntity implements BasicEntity {
 	}
 
 	
+	@Override
+	public boolean collides(BasicEntity b) {
+		if (!(b.isHard())) return false;
+		
+		Vector3f centerA = getPosition();
+		centerA.add(getPositionOffset());
+		
+		Vector3f centerB = b.getPosition();
+		centerB.add(b.getPositionOffset());	
+		
+		float totalGap = centerA.distance(centerB);
+		float totalRadius = getRadius()+b.getRadius();
+		return totalGap<totalRadius ;
+		
+		
+	}
+	
+	@Override
+	public boolean isHard() {
+		return true;
+			}
 
+	@Override
+	/**
+	 * getter for positionOffset
+	 * @return the offset between the objects position and the center of the approximated sphere representing the object
+	 */
+	public Vector3f getPositionOffset() {
+		return positionOffset;
+	}	
+	
+	@Override
+	/**
+	 * getter for radius
+	 * @return the radius of the approximated sphere representing the object
+	 */
+	public float getRadius() {
+		return radius;
+	}
+
+	@Override
+	public float getMass() {
+		return mass;
+	}
+	
+	
 }
