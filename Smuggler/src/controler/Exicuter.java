@@ -14,6 +14,7 @@ import gui.MTextBox;
 
 public class Exicuter extends MTextBox {
 	UniverseHandler unihand;
+	private boolean hosting;
 
 	public Exicuter(Vector3f position, float rx, float ry, float rz,
 			float width, float height, GameState showstate,
@@ -27,17 +28,11 @@ public class Exicuter extends MTextBox {
 	public void act(String s) {
 		String[] com = s.split(" ");
 		
-		System.out.println("Doing something...");
-		
-		if (com[0] == "spawn") {
-			unihand.entitys.add(new PhiEntity(new Vector3f(Float
-					.parseFloat(com[2]), Float.parseFloat(com[3]), Float
-					.parseFloat(com[4])), new Vector3f(), new Vector3f(), 0, 0,
-					0, 1, UniverseHandler.models[Integer.parseInt(com[1])]));
-			
-			System.out.println("Object was created");
+		if (com[0] == "host") {
+			hosting=true;
+			System.out.println("What port?");
 		}else{
-			System.out.println("Invalid Command: "+s);
+			System.out.println("the Command '"+com[0]+"' is not valid");
 		}
 	}
 
@@ -45,6 +40,7 @@ public class Exicuter extends MTextBox {
 	public void enter() {
 		act(this.getStext());
 		this.setStext("");
+		MainLoop.setTypeStream(null);
 	}
 
 	@Override

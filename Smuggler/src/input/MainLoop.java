@@ -229,12 +229,12 @@ public class MainLoop {
 				}
 			}
 		};
-
-		GLFW.glfwSetCharCallback(window, cc);
+		
 		GLFW.glfwSetMouseButtonCallback(window, mbc);
 		GLFW.glfwSetWindowSizeCallback(window, wsc);
 		GLFW.glfwSetKeyCallback(window, kc);
 		GLFW.glfwSetCursorPosCallback(window, cpc);
+		GLFW.glfwSetCharCallback(window, cc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
 		unihand.init();
