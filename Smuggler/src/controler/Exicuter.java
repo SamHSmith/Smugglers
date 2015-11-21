@@ -28,21 +28,9 @@ public class Exicuter extends MTextBox {
 	public void act(String s) {
 		String[] com = s.split(" ");
 		
-<<<<<<< HEAD
 		if (com[0] == "host") {
 			hosting=true;
 			System.out.println("What port?");
-=======
-		System.out.println("Doing something...");
-		
-		if (com[0] == "spawn") {
-			unihand.entitys.add(new PhiEntity(new Vector3f(Float
-					.parseFloat(com[2]), Float.parseFloat(com[3]), Float
-					.parseFloat(com[4])), new Vector3f(), new Vector3f(), 0, 0,
-					0, 1, 1.0f,UniverseHandler.models[Integer.parseInt(com[1])]));
-			
-			System.out.println("Object was created");
->>>>>>> branch 'master' of https://github.com/Sainstprogramer/Smugglers.git
 		}else{
 			System.out.println("the Command '"+com[0]+"' is not valid");
 		}

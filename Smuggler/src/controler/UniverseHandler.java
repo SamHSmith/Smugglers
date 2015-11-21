@@ -145,7 +145,7 @@ public class UniverseHandler {
 		model = ObjFileLoader.loadObjModel("Grass", loader, false);
 		tmodel = new Texturedmodel(model, text);
 
-		entitys.add(new PhiEntity(new Vector3f(0,-2,0), new Vector3f(), new Vector3f(), 0, 0, 0, 1f, tmodel));
+		entitys.add(new PhiEntity(new Vector3f(0,-2,0), new Vector3f(), new Vector3f(), 0, 0, 0, 1f, 0, tmodel));
 		
 		music.Play(mainmenu, true);
 	}
@@ -155,8 +155,6 @@ public class UniverseHandler {
 		phe.simulate();
 		
 		phe.collision();
-		
-		phe.collisionResponse();
 		
 		
 		///////////////////////////////////////////////////
