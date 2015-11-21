@@ -208,4 +208,31 @@ public class GUI implements BasicEntity {
 	
 	public void endrendering(){}
 
+	@Override
+	public boolean collides(BasicEntity b) {
+		return false;
+	}
+
+	@Override
+	public boolean isHard() {
+		return false;
+	}
+
+	@Override
+	public Vector3f getPositionOffset() {
+		return new Vector3f(0,0,0);
+	}
+
+	@Override
+	public float getRadius() {
+		return 0;
+	}
+
+	@Override
+	public float getMass() {
+		return 0;
+	}
+	
+	
+
 }

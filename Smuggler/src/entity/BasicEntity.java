@@ -63,5 +63,39 @@ public interface BasicEntity {
 	public ArrayList<BasicEntity> getSubObjects();
 
 	public void setSubObjects(ArrayList<BasicEntity> subObjects);
+	
+	/**
+	 * Calculates whether this object collides (overlaps) with another object b
+	 * @param b
+	 * @return True if the objects overlap, false otherwise
+	 */
+	public boolean collides(BasicEntity b);
+	
+	/**
+	 * Indicates whether this object is hard or infinitely soft (and therefore cannot collide)
+	 * Could perhaps be replaced by using 0 mass (Which would have the same physical effect)
+	 * TODO Replace isHard with mass of 0
+	 * @return True if hard, false if infintely soft
+	 */
+	public boolean isHard();
+	
+	/** 
+	 * The vector offset between the position of the object (reflected in getPosition) and the position of the 
+	 * geographical center of the sphere that can be considered to approximate the object
+	 * @return offset vector
+	 */
+	public Vector3f getPositionOffset(); 
+	/**
+	 * The radius of the approximated sphere reflecting the rough shape of the object for the purposes of collision detection
+	 * @return radius in m
+	 */
+	public float getRadius();
+	
+	/**
+	 * Mass of the object in kg
+	 * @return mass in kg
+	 */
+	public float getMass();
+	
 
 }

@@ -12,7 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.media.j3d.Texture;
 
 import models.RawModel;
 
@@ -32,14 +31,14 @@ public class ModelLoader {
 	private List<Integer> texturesIDs = new ArrayList<Integer>();
 	private static final int BYTES_PER_PIXEL = 4;;
 
-	public RawModel LoadToVAO(float[] posisions,float[] texturecords,float[] normals,int[] indeces,float[] collcoords) {
+	public RawModel LoadToVAO(float[] posisions,float[] texturecords,float[] normals,int[] indeces) {
 		int vaoID=createVAO();
 		indeces(indeces);
 		storeDataInAttributeList(0, 3, posisions);
 		storeDataInAttributeList(1, 2, texturecords);
 		storeDataInAttributeList(2, 3, normals);
 		unbindVAO();
-		return new RawModel(vaoID, indeces.length, collcoords);
+		return new RawModel(vaoID, indeces.length);
 	}
 	public RawModel LoadToVAO(float[] posisions,float[] texturecords,int[] indeces) {
 		int vaoID=createVAO();
@@ -47,7 +46,7 @@ public class ModelLoader {
 		storeDataInAttributeList(0, 3, posisions);
 		storeDataInAttributeList(1, 2, texturecords);
 		unbindVAO();
-		return new RawModel(vaoID, indeces.length, null);
+		return new RawModel(vaoID, indeces.length);
 	}
 	public int LoadToVAO(float[] posisions,float[] texturecords) {
 		int vaoID=createVAO();
