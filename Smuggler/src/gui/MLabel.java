@@ -3,11 +3,9 @@ package gui;
 import fontMeshCreator.FontType;
 import fontMeshCreator.GUIText;
 import fontRendering.TextMaster;
+import math3d.Vector2f;
+import math3d.Vector3f;
 import models.Texturedmodel;
-
-import org.joml.Vector2f;
-import org.joml.Vector3f;
-
 import controler.GameState;
 
 public class MLabel extends GUI {

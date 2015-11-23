@@ -12,8 +12,7 @@ import java.net.Socket;
 import java.net.SocketException;
 import java.util.ArrayList;
 
-import org.joml.Vector3f;
-
+import math3d.Vector3f;
 import entity.BasicEntity;
 import entity.PhiEntity;
 import gui.GUI;

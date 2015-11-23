@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 
 
-import org.joml.Vector3f;
 
+import math3d.Vector3f;
 import models.Texturedmodel;
 
 public interface BasicEntity {
@@ -96,6 +96,12 @@ public interface BasicEntity {
 	 * @return mass in kg
 	 */
 	public float getMass();
+	
+	/**
+	 * an update method so that the object can have some code of its own 
+	 * @author Sam
+	 */
+	public void tick();
 	
 
 }

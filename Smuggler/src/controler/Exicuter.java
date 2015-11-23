@@ -3,9 +3,9 @@ package controler;
 import input.Key;
 import input.MainLoop;
 import input.Mouse;
+import math3d.Vector3f;
 import models.Texturedmodel;
 
-import org.joml.Vector3f;
 import org.lwjgl.glfw.GLFW;
 
 import entity.PhiEntity;

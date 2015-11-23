@@ -7,10 +7,9 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.ArrayList;
 
+import math3d.Vector2f;
+import math3d.Vector3f;
 import models.RawModel;
-
-import org.joml.Vector2f;
-import org.joml.Vector3f;
 
 public class ObjFileLoader {
 	public static float[] vertecies;

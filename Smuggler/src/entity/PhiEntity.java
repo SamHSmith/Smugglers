@@ -4,8 +4,8 @@ import java.util.ArrayList;
 
 
 
-import org.joml.Vector3f;
 
+import math3d.Vector3f;
 import models.Texturedmodel;
 
 public class PhiEntity implements BasicEntity {
@@ -19,6 +19,7 @@ public class PhiEntity implements BasicEntity {
 	float ry = 0;
 	float rz = 0;
 	float scale = 0;
+	
 	float mass = 0;
 	Texturedmodel model = null;
 	
@@ -51,7 +52,7 @@ public class PhiEntity implements BasicEntity {
 	 */
 	private void calculateCenterAndRadius() {
 		//TODO Work out properly based on the objects shape and size
-		radius = 2f*scale; // Sam said the spheres were 1m wide
+		radius = 0.5f*scale; // Sam said the spheres were 1m wide
 		positionOffset = new Vector3f(0,0,0);
 		
 	}
@@ -241,6 +242,9 @@ public class PhiEntity implements BasicEntity {
 	public float getMass() {
 		return mass;
 	}
+
+	@Override
+	public void tick() {}
 	
 	
 }

@@ -16,8 +16,8 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 import java.util.ArrayList;
 
 import loading.ModelLoader;
+import math3d.Vector3f;
 
-import org.joml.Vector3f;
 import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
@@ -32,9 +32,10 @@ import org.lwjgl.openal.ALCapabilities;
 import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GLContext;
 
+import render.Camera;
 import render.Renderer;
-import shaders.EntityShader;
-import shaders.GUIshader;
+import render.shaders.EntityShader;
+import render.shaders.GUIshader;
 import sound.Listener;
 import controler.UniverseHandler;
 import entity.BasicEntity;
@@ -64,12 +65,9 @@ public class MainLoop {
 	Warp warp;
 	ArrayList<BasicEntity> entitys;
 	ArrayList<GUI> guis;
-	public float cameray = 0;
-	public float camerax = 0;
 	ArrayList<Light> lights;
-	public Vector3f viewpos = new Vector3f();
+	public Camera cam;
 	public static ArrayList<Key> keys;
-	public float cameraz;
 	public static boolean mousedis = false;
 	public static int mousedistimer = 0;
 	Listener listen;
@@ -135,6 +133,7 @@ public class MainLoop {
 		loader = new ModelLoader();
 		unihand.loader = loader;
 		mouse = new Mouse(false, false, false);
+		cam=new Camera(new Vector3f(), 0, 0, 0, false);
 
 		for (int i = 0; i < 1000; i++) {
 			keys.add(Key.False);
@@ -168,8 +167,10 @@ public class MainLoop {
 
 			@Override
 			public void invoke(long arg0, double xpos, double ypos) {
-				camerax = (float) xpos * 180 / (WIDTH);
-				cameray = -((float) ypos * -180 / (HEIGHT));
+				if(!cam.isCin()){
+				cam.setRy((float) xpos * 180 / (WIDTH));
+				cam.setRx(-((float) ypos * -180 / (HEIGHT)));
+				}
 
 				mouse.x = (float) ((xpos * 2 / (WIDTH)) - 1);
 				mouse.y = (float) -((ypos * 2 / (HEIGHT)) - 1);
@@ -274,8 +275,7 @@ public class MainLoop {
 	}
 
 	private void tick() {
-		listen.UpdateListenerValuse(viewpos, new Vector3f(), cameray, camerax,
-				cameraz);
+		listen.UpdateListenerValuse(new Vector3f(), cam);
 
 		if (mousedis) {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
@@ -283,6 +283,14 @@ public class MainLoop {
 		} else {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
+		}
+		
+		for(int i=0;i<UniverseHandler.entitys.size();i++){
+			UniverseHandler.entitys.get(i).tick();
+		}
+		
+		for(int i=0;i<UniverseHandler.removedentitys.size();i++){
+			UniverseHandler.entitys.remove(UniverseHandler.removedentitys.get(i));
 		}
 		
 		unihand.tick();

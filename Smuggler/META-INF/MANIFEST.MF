@@ -21,6 +21,6 @@ Export-Package: entity,
  org.lwjgl.system.windows,
  org.lwjgl.system.windows.opengl,
  render,
- shaders,
+ render.shaders,
  textures,
  toolbox

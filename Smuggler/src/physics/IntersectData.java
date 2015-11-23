@@ -1,6 +1,6 @@
 package physics;
 
-import org.joml.Vector3f;
+import math3d.Vector3f;
 
 public class IntersectData {
 	

@@ -2,8 +2,7 @@ package entity;
 
 import java.util.ArrayList;
 
-import org.joml.Vector3f;
-
+import math3d.Vector3f;
 import models.Texturedmodel;
 
 public class Effect implements BasicEntity {
@@ -26,6 +25,22 @@ public class Effect implements BasicEntity {
 		super();
 		this.subObjects = new ArrayList<BasicEntity>();
 		this.velocity = velocity;
+		this.position = position;
+		this.rx = rx;
+		this.ry = ry;
+		this.rz = rz;
+		this.scale = scale;
+		this.model = model;
+		this.color=color;
+	}
+	
+	public Effect(Vector3f velocity,Vector3f rotvelocity,
+			Vector3f position, float rx, float ry, float rz,
+			float scale, Texturedmodel model,Vector3f color) {
+		super();
+		this.subObjects = new ArrayList<BasicEntity>();
+		this.velocity = velocity;
+		this.rotVelocity=rotvelocity;
 		this.position = position;
 		this.rx = rx;
 		this.ry = ry;
@@ -222,5 +237,7 @@ public class Effect implements BasicEntity {
 	public float getMass() {
 		return 0;
 	}
+	@Override
+	public void tick() {}
 	
 }

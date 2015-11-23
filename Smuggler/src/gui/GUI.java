@@ -4,10 +4,8 @@ import input.Mouse;
 
 import java.util.ArrayList;
 
+import math3d.Vector3f;
 import models.Texturedmodel;
-
-import org.joml.Vector3f;
-
 import controler.GameState;
 import entity.BasicEntity;
 
@@ -232,6 +230,9 @@ public class GUI implements BasicEntity {
 	public float getMass() {
 		return 0;
 	}
+
+	@Override
+	public void tick() {}
 	
 	
 

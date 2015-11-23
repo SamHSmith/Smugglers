@@ -1,8 +1,7 @@
 package entity;
 
+import math3d.Vector3f;
 import models.Texturedmodel;
-
-import org.joml.Vector3f;
 
 public class Light extends Effect {
 	private Vector3f attenuation= new Vector3f(1,0,0);

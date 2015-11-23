@@ -3,7 +3,8 @@ package sound;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import org.joml.Vector3f;
+import math3d.Vector3f;
+
 import org.lwjgl.BufferUtils;
 import org.lwjgl.openal.AL;
 import org.lwjgl.openal.AL10;

@@ -1,8 +1,7 @@
 package entity;
 
+import math3d.Vector3f;
 import models.Texturedmodel;
-
-import org.joml.Vector3f;
 
 public class Warp extends Effect {
 	
