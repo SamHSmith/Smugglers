@@ -11,7 +11,7 @@ public class KeyPlacement {
 	 * @param ry rotation y
 	 * @param rz rotation z
 	 * @param pos position
-	 * @param time when this is the state to be in
+	 * @param time the time it will take to reach this Placement
 	 */
 	public KeyPlacement(float rx, float ry, float rz,int time, Vector3f pos) {
 		super();
@@ -46,5 +46,14 @@ public class KeyPlacement {
 	public void setPos(Vector3f pos) {
 		this.pos = pos;
 	}
+
+	public int getTime() {
+		return time;
+	}
+
+	public void setTime(int time) {
+		this.time = time;
+	}
+	
 
 }

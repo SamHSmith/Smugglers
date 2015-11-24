@@ -30,6 +30,7 @@ import render.Renderer;
 import sound.Sound;
 import sound.Source;
 import cinematics.Camera_Rail;
+import cinematics.KeyPlacement;
 import entity.BasicEntity;
 import entity.Light;
 import entity.ParticalEmiter;
@@ -167,7 +168,11 @@ public class UniverseHandler {
 		
 		////////////////////////////////////////////////////////////////////////////////////////
 		
+		cr=new Camera_Rail(loop.cam);
 		
+		loop.cam.setPosition(new Vector3f(0,0,100));
+		
+		cr.addPlacement(new KeyPlacement(20, 0, 0, 60*4, new Vector3f(0,50,0)));
 		
 		
 		////////////////////////////////////////////////////////////////////////////////////////
@@ -190,6 +195,8 @@ public class UniverseHandler {
 		// /////////////////////////////////////////////////
 
 		guis.get(0).rotate(0, 0, 0.02f);
+		
+		cr.tick();
 
 		if (MainLoop.getKey(GLFW.GLFW_KEY_ESCAPE) == Key.Press) {
 			loop.close();
