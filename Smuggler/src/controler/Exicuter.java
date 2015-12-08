@@ -1,5 +1,7 @@
 package controler;
 
+import fontMeshCreator.FontType;
+import gui.MTextBox;
 import input.Key;
 import input.MainLoop;
 import input.Mouse;
@@ -7,10 +9,6 @@ import math3d.Vector3f;
 import models.Texturedmodel;
 
 import org.lwjgl.glfw.GLFW;
-
-import entity.PhiEntity;
-import fontMeshCreator.FontType;
-import gui.MTextBox;
 
 public class Exicuter extends MTextBox {
 	UniverseHandler unihand;

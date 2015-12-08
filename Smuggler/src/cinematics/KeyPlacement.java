@@ -1,11 +1,13 @@
 package cinematics;
 
 import math3d.Vector3f;
+import sound.Sound;
 
 public class KeyPlacement {
 	private float rx,ry,rz;
 	private Vector3f pos;
 	private int time;
+	private Sound s;
 	/**
 	 * @param rx rotation x
 	 * @param ry rotation y
@@ -13,6 +15,15 @@ public class KeyPlacement {
 	 * @param pos position
 	 * @param time the time it will take to reach this Placement
 	 */
+	public KeyPlacement(float rx, float ry, float rz,int time, Vector3f pos,Sound s) {
+		super();
+		this.rx = rx;
+		this.ry = ry;
+		this.rz = rz;
+		this.pos = pos;
+		this.time=time;
+		this.s=s;
+	}
 	public KeyPlacement(float rx, float ry, float rz,int time, Vector3f pos) {
 		super();
 		this.rx = rx;
@@ -54,6 +65,15 @@ public class KeyPlacement {
 	public void setTime(int time) {
 		this.time = time;
 	}
+
+	public Sound getS() {
+		return s;
+	}
+
+	public void setS(Sound s) {
+		this.s = s;
+	}
+	
 	
 
 }

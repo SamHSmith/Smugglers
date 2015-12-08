@@ -13,8 +13,8 @@ import entity.Warp;
 
 public class EntityShader extends ShaderProgram {
 
-	private static final String VERTEXFILE = "src/render/shaders/vertexshader.txt";
-	private static final String FRAGFILE = "src/render/shaders/fragmentshader.txt";
+	private static final String VERTEXFILE = "/render/shaders/vertexshader.txt";
+	private static final String FRAGFILE = "/render/shaders/fragmentshader.txt";
 
 	private static final int MAX_LIGHTS = 4;
 
@@ -34,7 +34,7 @@ public class EntityShader extends ShaderProgram {
 	private int shadviewloc;
 
 	public EntityShader() {
-		super(VERTEXFILE, FRAGFILE);
+		super(EntityShader.class.getResourceAsStream(VERTEXFILE), EntityShader.class.getResourceAsStream(FRAGFILE));
 	}
 
 	@Override

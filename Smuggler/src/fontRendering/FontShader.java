@@ -2,18 +2,19 @@ package fontRendering;
 
 import math3d.Vector2f;
 import math3d.Vector3f;
+import render.shaders.GUIshader;
 import render.shaders.ShaderProgram;
 
 public class FontShader extends ShaderProgram{
 
-	private static final String VERTEX_FILE = "src/fontRendering/fontVertex.txt";
-	private static final String FRAGMENT_FILE = "src/fontRendering/fontFragment.txt";
+	private static final String VERTEX_FILE = "fontVertex.txt";
+	private static final String FRAGMENT_FILE = "fontFragment.txt";
 	
 	private int location_colour;
 	private int location_translation;
 	
 	public FontShader() {
-		super(VERTEX_FILE, FRAGMENT_FILE);
+		super(FontShader.class.getResourceAsStream(VERTEX_FILE), FontShader.class.getResourceAsStream(FRAGMENT_FILE));
 	}
 
 	@Override

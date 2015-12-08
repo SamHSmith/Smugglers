@@ -50,8 +50,7 @@ public class MainLoop {
 	public static final float NEARPLANE = 0.01f;
 	public static final float FARPLANE = 1000;
 	GLFWCursorPosCallback cpc;
-	private GLFWErrorCallback errorCallback = Callbacks
-			.errorCallbackPrint(System.err);
+	private GLFWErrorCallback errorCallback;
 	GLFWKeyCallback kc;
 	GLFWWindowSizeCallback wsc;
 	GLFWMouseButtonCallback mbc;
@@ -74,10 +73,11 @@ public class MainLoop {
 	private UniverseHandler unihand;
 	public Mouse mouse;
 	private static Typestream ts;
+	public static final int keyamount = 500;
 
 	/**
-	 * This class is the main class that uses all the other classes and maneges
-	 * of the inputs suchas window mouse or keybored
+	 * This class is the main class that uses all the other classes and manegers
+	 * of the inputs such as window, mouse or keyboard
 	 */
 
 	public static int WIDTH = 1280;
@@ -88,13 +88,45 @@ public class MainLoop {
 	}
 
 	public void start() {
-		createDisplay();
-		init();
+		try {
+			createDisplay();
+			init();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+		}
 		loop();
 		close();
 	}
 
 	private void createDisplay() {
+		
+		 errorCallback=new GLFWErrorCallback() {
+			
+			@Override
+			public void invoke(int error, long descripten) {
+				System.err.println("Error "+error+" happend. I don't now what it means but I do have the message of it.");
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.err.println("But there is a problem.");
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.err.println("You see the message is just a number.");
+				System.err.println("I bet it means somthing but I don't no.");
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+				System.err.println("Here is the Message");
+				System.err.println(descripten);
+			}
+		};
 
 		glfwSetErrorCallback(errorCallback);
 
@@ -133,9 +165,9 @@ public class MainLoop {
 		loader = new ModelLoader();
 		unihand.loader = loader;
 		mouse = new Mouse(false, false, false);
-		cam=new Camera(new Vector3f(), 0, 0, 0, false);
+		cam = new Camera(new Vector3f(), 0, 0, 0, false);
 
-		for (int i = 0; i < 1000; i++) {
+		for (int i = 0; i < keyamount; i++) {
 			keys.add(Key.False);
 		}
 
@@ -154,11 +186,16 @@ public class MainLoop {
 							ts.enter();
 						}
 					}
-					
-					ckeckkeys(key, true);
+
+					if (key < keyamount&&key > 0) {
+						System.err.println(key+" < "+keyamount);
+						ckeckkeys(key, true);
+					}
 				}
 				if (action == GLFW.GLFW_RELEASE) {
-					ckeckkeys(key, false);
+					if (key < keyamount&&key > 0) {
+						ckeckkeys(key, false);
+					}
 				}
 			}
 		};
@@ -167,9 +204,9 @@ public class MainLoop {
 
 			@Override
 			public void invoke(long arg0, double xpos, double ypos) {
-				if(!cam.isCin()){
-				cam.setRy((float) xpos * 180 / (WIDTH));
-				cam.setRx(-((float) ypos * -180 / (HEIGHT)));
+				if (!cam.isCin()) {
+					cam.setRy((float) xpos * 180 / (WIDTH));
+					cam.setRx(-((float) ypos * -180 / (HEIGHT)));
 				}
 
 				mouse.x = (float) ((xpos * 2 / (WIDTH)) - 1);
@@ -213,7 +250,7 @@ public class MainLoop {
 				}
 			}
 		};
-		
+
 		GLFW.glfwSetMouseButtonCallback(window, mbc);
 		GLFW.glfwSetWindowSizeCallback(window, wsc);
 		GLFW.glfwSetKeyCallback(window, kc);
@@ -221,7 +258,13 @@ public class MainLoop {
 		GLFW.glfwSetCharCallback(window, cc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
-		unihand.init();
+		
+		try {
+			unihand.init();
+		} catch (Exception e) {
+			e.printStackTrace(System.err);
+			close();
+		}
 
 		listen = new Listener();
 	}
@@ -244,13 +287,17 @@ public class MainLoop {
 
 			while (unprocessed >= 1) {
 				updates++;
-				tick();
+				try {
+					tick();	
+				} catch (Exception e) {
+					e.printStackTrace(System.out);
+				}
 				unprocessed--;
 				shouldrender = true;
 			}
 
 			if (shouldrender) {
-				ren.render(unihand.entitys, unihand.guis, unihand.lights,
+				ren.render(UniverseHandler.entitys, unihand.guis, unihand.lights,
 						unihand.warp);
 				fps++;
 				shouldrender = false;
@@ -263,7 +310,7 @@ public class MainLoop {
 
 			if (System.currentTimeMillis() - fpstimer > 10000) {
 				System.out.println();
-				System.out.println(updates/10 + " :ticks fps: " + fps/10);
+				System.out.println(updates / 10 + " :ticks fps: " + fps / 10);
 				System.out.println();
 				updates = 0;
 				fps = 0;
@@ -284,15 +331,16 @@ public class MainLoop {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
 		}
-		
-		for(int i=0;i<UniverseHandler.entitys.size();i++){
+
+		for (int i = 0; i < UniverseHandler.entitys.size(); i++) {
 			UniverseHandler.entitys.get(i).tick();
 		}
-		
-		for(int i=0;i<UniverseHandler.removedentitys.size();i++){
-			UniverseHandler.entitys.remove(UniverseHandler.removedentitys.get(i));
+
+		for (int i = 0; i < UniverseHandler.removedentitys.size(); i++) {
+			UniverseHandler.entitys.remove(UniverseHandler.removedentitys
+					.get(i));
 		}
-		
+
 		unihand.tick();
 		updateKeys();
 	}

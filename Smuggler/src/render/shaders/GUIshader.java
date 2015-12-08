@@ -4,14 +4,14 @@ import math3d.Matrix4f;
 
 public class GUIshader extends ShaderProgram {
 	
-	private static final String VERTEXFILE ="src/render/shaders/GUIvertex.txt";
-	private static final String FRAGFILE="src/render/shaders/GUIfrag.txt";
+	private static final String VERTEXFILE ="GUIvertex.txt";
+	private static final String FRAGFILE="GUIfrag.txt";
 
 	private int matloc;
 	private int rotloc;
 
 	public GUIshader() {
-		super(VERTEXFILE,FRAGFILE);
+		super(GUIshader.class.getResourceAsStream(VERTEXFILE), GUIshader.class.getResourceAsStream(FRAGFILE));
 	}
 
 	@Override

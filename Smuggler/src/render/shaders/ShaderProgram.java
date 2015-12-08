@@ -3,6 +3,8 @@ package render.shaders;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 import math3d.Matrix4f;
@@ -20,7 +22,7 @@ public abstract class ShaderProgram {
 
 	private static FloatBuffer matrixbuffer = BufferUtils.createFloatBuffer(16);
 
-	public ShaderProgram(String vfile, String fragmentfile) {
+	public ShaderProgram(InputStream vfile, InputStream fragmentfile) {
 		vShaderID = loadShader(vfile, GL20.GL_VERTEX_SHADER);
 		fragshaderID = loadShader(fragmentfile, GL20.GL_FRAGMENT_SHADER);
 		programID = GL20.glCreateProgram();
@@ -84,20 +86,19 @@ public abstract class ShaderProgram {
 		GL20.glBindAttribLocation(programID, atribute, variblename);
 	}
 
-	public static int loadShader(String file, int type) {
+	public static int loadShader(InputStream in, int type) {
 		StringBuilder shaderscorce = new StringBuilder();
 
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(file));
+			BufferedReader reader = new BufferedReader (new InputStreamReader(in));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				shaderscorce.append(line).append("\n");
 			}
 			reader.close();
-		} catch (IOException e) {
-			System.err.println("Could not read shader file!");
-			e.printStackTrace();
-			System.exit(-1);
+		} catch (Exception e) {
+			System.err.println("FAILED TO LOAD SHADER");
+			System.err.println("THE GAME WILL STILL RUN BUT THE SHADER WON'T WORK");
 		}
 		int shaderid = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderid, shaderscorce);

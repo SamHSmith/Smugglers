@@ -28,14 +28,15 @@ public class Camera_Rail {
 
 	public void tick() {
 		if(!rail.isEmpty()){
-			System.out.println("There are rails to follow");
 			if(!moving){
 				movesleft=rail.get(0).getTime();
-				rx=rail.get(0).getRx()/rail.get(0).getTime();
-				ry=rail.get(0).getRy()/rail.get(0).getTime();
-				rz=rail.get(0).getRz()/rail.get(0).getTime();
-				rail.get(0).getPos().div(rail.get(0).getTime(),move);
+				rx=(rail.get(0).getRx()-cam.getRx())/rail.get(0).getTime();
+				ry=(rail.get(0).getRy()-cam.getRy())/rail.get(0).getTime();
+				rz=(rail.get(0).getRz()-cam.getRz())/rail.get(0).getTime();
+				rail.get(0).getPos().sub(cam.getPosition(), move);
+				move.div(rail.get(0).getTime());
 				moving=true;
+				cam.setCin(true);
 			}else{
 				cam.getPosition().add(move);
 				cam.setRx(cam.getRx()+rx);
@@ -44,15 +45,15 @@ public class Camera_Rail {
 				
 				movesleft--;
 				
-				System.out.println("there are "+movesleft+" moves left");
-				
 				if(movesleft<=0){
 					moving=false;
 					rail.remove(0);
 				}
 			}
+		}else {
+			cam.setCin(false);
 		}
-		cam.setCin(moving);
+		
 	}
 	
 	public void addPlacement(KeyPlacement place) {

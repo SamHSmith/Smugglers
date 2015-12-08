@@ -96,22 +96,6 @@ public class UniverseHandler {
 								"res/Fonts/Sloppy/Font.fnt")), new Vector3f(
 								0.5f, 0.2f, 1), 2));
 
-		MConsole c = new MConsole(new Vector3f(0.3f, -0.3f, 0), 0, 0, 0, 0.3f,
-				0.2f, GameState.All, null, "", new FontType(
-						loader.loadFontTexture("Readable"), new File(
-								"res/Fonts/Readable/Font.fnt")), new Vector3f(
-						1f, 1f, 1f), 2);
-
-		guis.add(c);
-
-		c.add(new Exicuter(new Vector3f(0.3f, -0.4f, 0), 0, 0, 0, 0.4f, 0.2f,
-				GameState.All, null, 2, new FontType(loader
-						.loadFontTexture("Readable"), new File(
-						"res/Fonts/Readable/Font.fnt")), new Vector3f(1, 1, 1),
-				this));
-
-		System.setOut(c.getP());
-
 		guis.get(0).add(
 				new MButton(new Vector3f(0, 0, 0f), 0, 0, 0, (float) 0.2f,
 						0.1f, GameState.All, models[1],
@@ -166,13 +150,34 @@ public class UniverseHandler {
 		lights.add(l);
 		entitys.add(l);
 		
+		
+		MConsole c = new MConsole(new Vector3f(0.3f, -0.3f, 0), 0, 0, 0, 0.3f,
+				0.2f, GameState.All, null, "", new FontType(
+						loader.loadFontTexture("Readable"), new File(
+								"res/Fonts/Readable/Font.fnt")), new Vector3f(
+						1f, 1f, 1f), 2);
+
+		guis.add(c);
+
+		c.add(new Exicuter(new Vector3f(0.3f, -0.4f, 0), 0, 0, 0, 0.4f, 0.2f,
+				GameState.All, null, 2, new FontType(loader
+						.loadFontTexture("Readable"), new File(
+						"res/Fonts/Readable/Font.fnt")), new Vector3f(1, 1, 1),
+				this));
+
+		System.setOut(c.getP());
+		
 		////////////////////////////////////////////////////////////////////////////////////////
 		
 		cr=new Camera_Rail(loop.cam);
 		
-		loop.cam.setPosition(new Vector3f(0,0,100));
 		
-		cr.addPlacement(new KeyPlacement(20, 0, 0, 60*4, new Vector3f(0,50,0)));
+		
+		cr.addPlacement(new KeyPlacement(0, 130, 0, 60*4, new Vector3f(0,0,0)));
+		cr.addPlacement(new KeyPlacement(20, 160, 0, 60*7, new Vector3f(0,2,0)));
+		cr.addPlacement(new KeyPlacement(40, -50, 0, 60*5, new Vector3f(20,20,20)));
+		cr.addPlacement(new KeyPlacement(90, -50, 0, 60*5, new Vector3f(0,100,0)));
+		cr.addPlacement(new KeyPlacement(90, -50, 0, 60*2, new Vector3f(0,0,0)));
 		
 		
 		////////////////////////////////////////////////////////////////////////////////////////
@@ -196,7 +201,9 @@ public class UniverseHandler {
 
 		guis.get(0).rotate(0, 0, 0.02f);
 		
+		if(state==GameState.InGame){
 		cr.tick();
+		}
 
 		if (MainLoop.getKey(GLFW.GLFW_KEY_ESCAPE) == Key.Press) {
 			loop.close();
