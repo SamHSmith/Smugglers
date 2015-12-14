@@ -1,6 +1,5 @@
 package toolbox;
 
-import input.MainLoop;
 import math3d.Matrix4f;
 import math3d.Vector3f;
 import math3d.Vector4f;
@@ -25,6 +24,15 @@ public class Maths {
 		m.translate(pos);
 		
 		return m;
+	}
+	
+	public static String baddCharecterFilter(String s){
+		
+		String olds=new String(s);
+		
+		String news =new String(s.replaceAll("[^a-zA-Z.]", ""));
+		
+		return news;
 	}
 	
 	public static Matrix4f createtransmat(Vector3f pos, float width, float height){

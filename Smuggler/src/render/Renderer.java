@@ -65,17 +65,15 @@ public class Renderer {
 		GL11.glClearColor(0, 0, 0, 1);
 		GL11.glClearDepth(1);
 
-		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, fbo);
+		int rb = 0;
 
-		int fb = 0;
-
-		fb = GL30.glGenRenderbuffers();
-		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, fb);
+		rb = GL30.glGenRenderbuffers();
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, rb);
 		GL30.glRenderbufferStorage(GL30.GL_RENDERBUFFER,
 				GL30.GL_DEPTH_COMPONENT32F, shadow_Map_Width_And_Height,
 				shadow_Map_Width_And_Height);
 		GL30.glFramebufferRenderbuffer(GL30.GL_DRAW_FRAMEBUFFER,
-				GL30.GL_DEPTH_ATTACHMENT, GL30.GL_RENDERBUFFER, fb);
+				GL30.GL_COLOR_ATTACHMENT0, GL30.GL_RENDERBUFFER, rb);
 
 		int inGame;
 
@@ -86,9 +84,13 @@ public class Renderer {
 				GL11.GL_RGBA, GL11.GL_FLOAT, 0);
 
 		GL32.glFramebufferTexture(GL30.GL_DRAW_FRAMEBUFFER,
-				GL30.GL_DEPTH_ATTACHMENT, inGame, 0);
+				GL30.GL_COLOR_ATTACHMENT0, inGame, 0);
 
 		GL30.glBindFramebuffer(GL30.GL_DRAW_FRAMEBUFFER, 0);
+		GL30.glBindRenderbuffer(GL30.GL_RENDERBUFFER, 0);
+		
+		GL30.glDeleteRenderbuffers(rb);
+		GL11.glDeleteTextures(inGame);
 
 		createProj(MainLoop.WIDTH, MainLoop.HEIGHT);
 
@@ -202,6 +204,12 @@ public class Renderer {
 
 	public EntityShader getShader() {
 		return shader;
+	}
+	
+	public void cleanup(){
+		shader.cleanup();
+		guishader.cleanup();
+		GL30.glDeleteFramebuffers(fbo);
 	}
 
 	public void setShader(EntityShader shader) {

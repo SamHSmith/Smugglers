@@ -1,0 +1,68 @@
+#
+# There is insufficient memory for the Java Runtime Environment to continue.
+# Native memory allocation (malloc) failed to allocate 37936 bytes for Chunk::new
+# Possible reasons:
+#   The system is out of physical RAM or swap space
+#   In 32 bit mode, the process size limit was hit
+# Possible solutions:
+#   Reduce memory load on the system
+#   Increase physical memory or swap space
+#   Check if swap backing store is full
+#   Use 64 bit Java on a 64 bit OS
+#   Decrease Java heap size (-Xmx/-Xms)
+#   Decrease number of Java threads
+#   Decrease Java thread stack sizes (-Xss)
+#   Set larger code cache with -XX:ReservedCodeCacheSize=
+# This output file may be truncated or incomplete.
+#
+#  Out of Memory Error (allocation.cpp:323), pid=8028, tid=4728
+#
+# JRE version: Java(TM) SE Runtime Environment (7.0_67-b01) (build 1.7.0_67-b01)
+# Java VM: Java HotSpot(TM) 64-Bit Server VM (24.65-b04 mixed mode windows-amd64 compressed oops)
+# Failed to write core dump. Minidumps are not enabled by default on client versions of Windows
+#
+
+---------------  T H R E A D  ---------------
+
+Current thread (0x000000000a131800):  JavaThread "C2 CompilerThread0" daemon [_thread_in_native, id=4728, stack(0x000000000bcd0000,0x000000000bdd0000)]
+
+Stack: [0x000000000bcd0000,0x000000000bdd0000]
+[error occurred during error reporting (printing stack bounds), id 0xc0000005]
+
+
+[error occurred during error reporting (printing native stack), id 0xc0000005]
+
+
+Current CompileTask:
+C2: 189731  128             math3d.Matrix4f::get (10 bytes)
+
+
+---------------  P R O C E S S  ---------------
+
+Java Threads: ( => current thread )
+  0x000000000c2ba000 JavaThread "Thread-0" [_thread_blocked, id=12476, stack(0x0000000053550000,0x0000000053650000)]
+  0x000000000a13c000 JavaThread "Service Thread" daemon [_thread_blocked, id=11024, stack(0x000000000bed0000,0x000000000bfd0000)]
+  0x000000000a133000 JavaThread "C2 CompilerThread1" daemon [_thread_in_native, id=12524, stack(0x000000000bdd0000,0x000000000bed0000)]
+=>0x000000000a131800 JavaThread "C2 CompilerThread0" daemon [_thread_in_native, id=4728, stack(0x000000000bcd0000,0x000000000bdd0000)]
+  0x000000000a11d000 JavaThread "JDWP Command Reader" daemon [_thread_in_native, id=10612, stack(0x000000000bbd0000,0x000000000bcd0000)]
+  0x000000000a11a000 JavaThread "JDWP Event Helper Thread" daemon [_thread_blocked, id=13488, stack(0x000000000bad0000,0x000000000bbd0000)]
+  0x000000000a10d000 JavaThread "JDWP Transport Listener: dt_socket" daemon [_thread_blocked, id=11904, stack(0x000000000b9d0000,0x000000000bad0000)]
+  0x000000000a106000 JavaThread "Attach Listener" daemon [_thread_blocked, id=9388, stack(0x000000000b590000,0x000000000b690000)]
+  0x000000000a103000 JavaThread "Signal Dispatcher" daemon [_thread_blocked, id=13276, stack(0x000000000b490000,0x000000000b590000)]
+  0x000000000a0d0000 JavaThread "Finalizer" daemon [_thread_blocked, id=10852, stack(0x000000000b390000,0x000000000b490000)]
+  0x000000000a0c7000 JavaThread "Reference Handler" daemon [_thread_blocked, id=9412, stack(0x000000000b290000,0x000000000b390000)]
+  0x0000000002dee000 JavaThread "main" [_thread_in_native, id=2432, stack(0x0000000002ed0000,0x0000000002fd0000)]
+
+Other Threads:
+  0x000000000a0c1800 VMThread [stack: 0x000000000b190000,0x000000000b290000] [id=504]
+  0x000000000a148800 WatcherThread [stack: 0x000000000bfd0000,0x000000000c0d0000] [id=7476]
+
+VM state:not at safepoint (normal execution)
+
+VM Mutex/Monitor currently owned by a thread: None
+
+Heap
+ PSYoungGen      total 28672K, used 20296K [0x00000000e0900000, 0x00000000e2880000, 0x0000000100000000)
+  eden space 25088K, 80% used [0x00000000e0900000,0x00000000e1cd2008,0x00000000e2180000)
+  from space 3584K, 0% used [0x00000000e2500000,0x00000000e2500000,0x00000000e2880000)
+  to   space 3584K, 0% used

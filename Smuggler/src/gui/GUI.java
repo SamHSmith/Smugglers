@@ -11,13 +11,13 @@ import entity.BasicEntity;
 
 public class GUI implements BasicEntity {
 
-	Vector3f position=new Vector3f();
-	float rx = 0;
-	float ry = 0;
-	float rz = 0;
-	float width = 0;
-	float height = 0;
-	Texturedmodel model = null;
+	protected Vector3f position=new Vector3f();
+	protected float rx = 0;
+	protected float ry = 0;
+	protected float rz = 0;
+	protected float width = 0;
+	protected float height = 0;
+	protected Texturedmodel model = null;
 	private ArrayList<GUI> subGUIs;
 	private GameState showstate;
 

@@ -1,3 +1,10 @@
+/math3d/
+/models/
+/net/
+/physics/
+/render/
+/sound/
+/toolbox/
 /cinematics/
 /controler/
 /entity/
@@ -6,10 +13,4 @@
 /gui/
 /input/
 /loading/
-/math3d/
-/models/
-/net/
-/physics/
-/render/
-/sound/
-/toolbox/
+/exceptions/

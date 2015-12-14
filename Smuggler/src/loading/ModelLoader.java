@@ -67,15 +67,15 @@ public class ModelLoader {
 		return vaoID;
 	}
 
-	public int loadTexture(String filename) {
-
+	protected int loadTexture(File file) {
+		
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File("res/Textures/" + filename + ".png"));
+			image = ImageIO.read(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-
+		
 		int[] pixels = new int[image.getWidth() * image.getHeight()];
 		image.getRGB(0, 0, image.getWidth(), image.getHeight(), pixels, 0,
 				image.getWidth());
@@ -94,7 +94,7 @@ public class ModelLoader {
 			}
 		}
 
-		buffer.flip(); // FOR THE LOVE OF GOD DO NOT FORGET THIS
+		buffer.flip(); //DO NOT EVER FORGET THIS!!!!!!!!!!!!!
 
 		// You now have a ByteBuffer filled with the color data of each pixel.
 		// Now just create a texture ID and bind it. Then you can load it using
@@ -119,12 +119,11 @@ public class ModelLoader {
 		return textureID;
 	}
 
-	public int loadFontTexture(String filename) {
+	protected int loadFontTexture(File file) {
 
 		BufferedImage image = null;
 		try {
-			image = ImageIO.read(new File("res/Fonts/" + filename
-					+ "/Font.png"));
+			image = ImageIO.read(file);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}

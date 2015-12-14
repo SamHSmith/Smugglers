@@ -1,25 +1,16 @@
 package controler;
 
-import fontMeshCreator.FontType;
 import fontRendering.TextMaster;
-import gui.ActivationListener;
 import gui.GUI;
-import gui.MButton;
-import gui.MConsole;
-import gui.MLabel;
-import gui.MPanel;
 import input.Key;
 import input.MainLoop;
 
 import java.io.File;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 
+import loading.MasterLoader;
 import loading.ModelLoader;
-import loading.ObjFileLoader;
 import math3d.Vector3f;
-import models.ModelTexture;
-import models.RawModel;
 import models.Texturedmodel;
 
 import org.lwjgl.glfw.GLFW;
@@ -27,14 +18,8 @@ import org.lwjgl.glfw.GLFW;
 import physics.MainEngine;
 import physics.PhysicsEngine;
 import render.Renderer;
-import sound.Sound;
-import sound.Source;
-import cinematics.Camera_Rail;
-import cinematics.KeyPlacement;
 import entity.BasicEntity;
 import entity.Light;
-import entity.ParticalEmiter;
-import entity.PhiEntity;
 import entity.Warp;
 
 public class UniverseHandler {
@@ -47,10 +32,7 @@ public class UniverseHandler {
 	public Renderer ren;
 	public ModelLoader loader;
 	private GameState state = GameState.MainMenu;
-	private Source music;
-	private Sound mainmenu;
 	private PhysicsEngine phe;
-	private Camera_Rail cr;
 	public static Texturedmodel[] models;
 
 	public UniverseHandler() {
@@ -64,131 +46,7 @@ public class UniverseHandler {
 		guis = new ArrayList<GUI>();
 		lights = new ArrayList<Light>();
 		warp = new Warp(new Vector3f(), new Vector3f(), 0, 0, 0, 1, 0, 0f);
-		TextMaster.init(loader);
-		models = new Texturedmodel[256];
 		phe = new MainEngine(this);
-
-		RawModel model = ObjFileLoader.loadObjModel("SimpleGui", loader, false);
-		ModelTexture text = new ModelTexture(loader.loadTexture("MMBack"));
-		Texturedmodel tmodel = new Texturedmodel(model, text);
-
-		models[0] = tmodel;
-
-		try {
-			mainmenu = new Sound("res/Sound/Epic.wav");
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		}
-		music = new Source(new Vector3f(), new Vector3f(), 1);
-
-		guis.add(new MPanel(new Vector3f(0, 0, 0), 0, 0, 0, 1.2f, 1.2f,
-				GameState.MainMenu, models[0]));
-
-		text = new ModelTexture(loader.loadTexture("white"));
-		tmodel = new Texturedmodel(model, text);
-
-		models[1] = tmodel;
-
-		guis.get(0).add(
-				new MLabel(new Vector3f(0.3f, 0.4f, 0), 0, 0, 0, 0.5f, 0.2f,
-						state, null, "You should try it", new FontType(loader
-								.loadFontTexture("Sloppy"), new File(
-								"res/Fonts/Sloppy/Font.fnt")), new Vector3f(
-								0.5f, 0.2f, 1), 2));
-
-		guis.get(0).add(
-				new MButton(new Vector3f(0, 0, 0f), 0, 0, 0, (float) 0.2f,
-						0.1f, GameState.All, models[1],
-						new ActivationListener() {
-
-							@Override
-							public void Action() {
-								setState(GameState.InGame);
-								MainLoop.mousedis = true;
-							}
-						}, "PlayDemo", new FontType(loader
-								.loadFontTexture("Sloppy"), new File(
-								"res/Fonts/Sloppy/Font.fnt")), new Vector3f(0,
-								1, 1), 2.5f));
-
-		text = new ModelTexture(loader.loadTexture("MMTitle"));
-		tmodel = new Texturedmodel(model, text);
-
-		models[2] = tmodel;
-
-		guis.get(0).add(
-				new MPanel(new Vector3f(0, 1.5f, 0), 0, 0, 0, 0.7f, 0.4f,
-						GameState.All, models[2]));
-
-		lights.add(new Light(new Vector3f(0, 0, 0), new Vector3f(-1, 1, -1), 0,
-				0, 1, 0, new Vector3f(0.5f, 1, 1)));
-
-		model = ObjFileLoader.loadObjModel("Buss", loader, false);
-		text = new ModelTexture(loader.loadTexture("white"));
-		tmodel = new Texturedmodel(model, text);
-
-		models[101] = tmodel;
-
-		model = ObjFileLoader.loadObjModel("Sphere", loader, false);
-		text = new ModelTexture(loader.loadTexture("white"));
-		tmodel = new Texturedmodel(model, text);
-
-		models[100] = tmodel;
-
-		entitys.add(new PhiEntity(new Vector3f(7f, 0, 5), new Vector3f(-0.01f,
-				0, 0), new Vector3f(0f, 0, 0), 0, 0, 0, 1f, 10f, models[100]));
-		entitys.add(new PhiEntity(new Vector3f(-20, 0.7f, 5.5f), new Vector3f(
-				0.05f, 0, 0), new Vector3f(0f, 0, 0), 0, 0, 0, 1f, 5f,
-				models[100]));
-
-		entitys.add(new ParticalEmiter(new Vector3f(0, 0, -0.2f), new Vector3f(
-				0, 4, 5), new Vector3f(0.7f, 0, 0), 0, 0, 0, 0.5f, 2, 50,
-				models[100]));
-		Light l = new Light(new Vector3f(0, 0, -0.2f), new Vector3f(1f, 4, 5),
-				0, 0, 0, 0, new Vector3f(1, 0, 0),
-				new Vector3f(1, 0.2f, 0.002f));
-		lights.add(l);
-		entitys.add(l);
-		
-		
-		MConsole c = new MConsole(new Vector3f(0.3f, -0.3f, 0), 0, 0, 0, 0.3f,
-				0.2f, GameState.All, null, "", new FontType(
-						loader.loadFontTexture("Readable"), new File(
-								"res/Fonts/Readable/Font.fnt")), new Vector3f(
-						1f, 1f, 1f), 2);
-
-		guis.add(c);
-
-		c.add(new Exicuter(new Vector3f(0.3f, -0.4f, 0), 0, 0, 0, 0.4f, 0.2f,
-				GameState.All, null, 2, new FontType(loader
-						.loadFontTexture("Readable"), new File(
-						"res/Fonts/Readable/Font.fnt")), new Vector3f(1, 1, 1),
-				this));
-
-		System.setOut(c.getP());
-		
-		////////////////////////////////////////////////////////////////////////////////////////
-		
-		cr=new Camera_Rail(loop.cam);
-		
-		
-		
-		cr.addPlacement(new KeyPlacement(0, 130, 0, 60*4, new Vector3f(0,0,0)));
-		cr.addPlacement(new KeyPlacement(20, 160, 0, 60*7, new Vector3f(0,2,0)));
-		cr.addPlacement(new KeyPlacement(40, -50, 0, 60*5, new Vector3f(20,20,20)));
-		cr.addPlacement(new KeyPlacement(90, -50, 0, 60*5, new Vector3f(0,100,0)));
-		cr.addPlacement(new KeyPlacement(90, -50, 0, 60*2, new Vector3f(0,0,0)));
-		
-		
-		////////////////////////////////////////////////////////////////////////////////////////
-
-		model = ObjFileLoader.loadObjModel("Grass", loader, false);
-		tmodel = new Texturedmodel(model, text);
-
-		entitys.add(new PhiEntity(new Vector3f(0, -2, 0), new Vector3f(),
-				new Vector3f(), 0, 0, 0, 1f, 0, tmodel));
-
-		music.Play(mainmenu, true);
 	}
 
 	public void tick() {
@@ -199,22 +57,12 @@ public class UniverseHandler {
 
 		// /////////////////////////////////////////////////
 
-		guis.get(0).rotate(0, 0, 0.02f);
-		
-		if(state==GameState.InGame){
-		cr.tick();
-		}
-
 		if (MainLoop.getKey(GLFW.GLFW_KEY_ESCAPE) == Key.Press) {
 			loop.close();
 		}
 
 		for (GUI gui : guis) {
 			gui.update(loop.mouse, state);
-		}
-
-		if (((state == GameState.InGame || state == GameState.None))) {
-			music.Stop(mainmenu);
 		}
 	}
 
@@ -235,6 +83,9 @@ public class UniverseHandler {
 	}
 
 	public static void main(String[] args) {
+		if(args.length>0)
+		MasterLoader.resFolder=new File(args[0]);
+		
 		new UniverseHandler();
 	}
 

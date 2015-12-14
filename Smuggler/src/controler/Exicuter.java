@@ -1,7 +1,7 @@
 package controler;
 
 import fontMeshCreator.FontType;
-import gui.MTextBox;
+import gui.buildingblocks.MTextBox;
 import input.Key;
 import input.MainLoop;
 import input.Mouse;

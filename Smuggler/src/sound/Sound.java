@@ -4,6 +4,7 @@ import java.io.BufferedInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileReader;
 import java.io.InputStream;
 
 import org.lwjgl.openal.AL10;
@@ -13,7 +14,7 @@ import toolbox.Maths;
 public class Sound {
 	int buffer;
 
-	public Sound(String path) throws FileNotFoundException {
+	public Sound(File f) throws FileNotFoundException {
 		int error;
 		// Load wav data into a buffer.
 		buffer = AL10.alGenBuffers();
@@ -23,9 +24,8 @@ public class Sound {
 			System.err.println("ERROR: " + Maths.getALErrorString(error));
 		}
 		InputStream fin = null;
-
-		File f = new File(path);
-		fin = new FileInputStream(f.getAbsoluteFile());
+		
+		fin = new FileInputStream(f);
 
 		error = AL10.alGetError();
 		if (error != AL10.AL_NO_ERROR) {
@@ -33,8 +33,10 @@ public class Sound {
 		}
 
 		WaveData waveFile = WaveData.create(new BufferedInputStream(fin));
-		System.out.println("Loading "+ path);
+		
+		System.out.println("Loading "+ f.getAbsolutePath());
 		System.out.println("Got Format: "+waveFile.format+" Data: "+waveFile.data+" Samplerate: "+waveFile.samplerate);
+		
 		AL10.alBufferData(buffer, waveFile.format, waveFile.data, waveFile.samplerate);
 		
 

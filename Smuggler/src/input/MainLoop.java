@@ -15,10 +15,10 @@ import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.util.ArrayList;
 
+import loading.MasterLoader;
 import loading.ModelLoader;
 import math3d.Vector3f;
 
-import org.lwjgl.glfw.Callbacks;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.glfw.GLFWCharCallback;
 import org.lwjgl.glfw.GLFWCursorPosCallback;
@@ -41,6 +41,7 @@ import controler.UniverseHandler;
 import entity.BasicEntity;
 import entity.Light;
 import entity.Warp;
+import exceptions.DirectoryNotSetException;
 import fontRendering.TextMaster;
 import gui.GUI;
 
@@ -166,6 +167,7 @@ public class MainLoop {
 		unihand.loader = loader;
 		mouse = new Mouse(false, false, false);
 		cam = new Camera(new Vector3f(), 0, 0, 0, false);
+		TextMaster.init(loader);
 
 		for (int i = 0; i < keyamount; i++) {
 			keys.add(Key.False);
@@ -188,7 +190,6 @@ public class MainLoop {
 					}
 
 					if (key < keyamount&&key > 0) {
-						System.err.println(key+" < "+keyamount);
 						ckeckkeys(key, true);
 					}
 				}
@@ -258,6 +259,14 @@ public class MainLoop {
 		GLFW.glfwSetCharCallback(window, cc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
+		
+		try {
+			MasterLoader.init(loader);
+		} catch (DirectoryNotSetException e1) {
+			System.err.println(e1.getMessage());
+			e1.printStackTrace();
+			close();
+		}
 		
 		try {
 			unihand.init();
@@ -384,8 +393,8 @@ public class MainLoop {
 	public void close() {
 		loader.cleanup();
 		TextMaster.cleanUp();
-		ren.getShader().cleanup();
-		ren.getGuishader().cleanup();
+		MasterLoader.cleanup();
+		ren.cleanup();
 		al.destroy();
 		al.getDevice().destroy();
 		glfwDestroyWindow(window);
