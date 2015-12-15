@@ -195,14 +195,17 @@ public class MasterLoader {
 	 * given name
 	 */
 	public static Resource getResource(String name) {
+		System.out.println("Searching for resource of the name "+name);
 		for (Iterator<Resource> iterator = reses.iterator(); iterator.hasNext();) {
 			Resource res = (Resource) iterator.next();
 			if (res.getName().equals(Maths.baddCharecterFilter(name))) {
+				System.out.println("Resource found...      "+name);
 				return res;
 			}
 
 		}
-
+		
+		System.out.println("Resource not found");
 		return null;
 	}
 

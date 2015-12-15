@@ -1,7 +1,7 @@
 package controler;
 
-import fontRendering.TextMaster;
 import gui.GUI;
+import gui.menus.MainMenu;
 import input.Key;
 import input.MainLoop;
 
@@ -34,6 +34,7 @@ public class UniverseHandler {
 	private GameState state = GameState.MainMenu;
 	private PhysicsEngine phe;
 	public static Texturedmodel[] models;
+	public static float masterVolume=1;
 
 	public UniverseHandler() {
 		loop = new MainLoop(this);
@@ -47,6 +48,8 @@ public class UniverseHandler {
 		lights = new ArrayList<Light>();
 		warp = new Warp(new Vector3f(), new Vector3f(), 0, 0, 0, 1, 0, 0f);
 		phe = new MainEngine(this);
+		
+		guis.add(new MainMenu(1, 1, GameState.MainMenu));
 	}
 
 	public void tick() {

@@ -100,12 +100,15 @@ public class MainLoop {
 	}
 
 	private void createDisplay() {
-		
-		 errorCallback=new GLFWErrorCallback() {
-			
+
+		errorCallback = new GLFWErrorCallback() {
+
 			@Override
 			public void invoke(int error, long descripten) {
-				System.err.println("Error "+error+" happend. I don't now what it means but I do have the message of it.");
+				System.err
+						.println("Error "
+								+ error
+								+ " happend. I don't now what it means but I do have the message of it.");
 				try {
 					Thread.sleep(1000);
 				} catch (InterruptedException e) {
@@ -189,12 +192,12 @@ public class MainLoop {
 						}
 					}
 
-					if (key < keyamount&&key > 0) {
+					if (key < keyamount && key > 0) {
 						ckeckkeys(key, true);
 					}
 				}
 				if (action == GLFW.GLFW_RELEASE) {
-					if (key < keyamount&&key > 0) {
+					if (key < keyamount && key > 0) {
 						ckeckkeys(key, false);
 					}
 				}
@@ -222,7 +225,16 @@ public class MainLoop {
 			public void invoke(long window, int nwidth, int nheight) {
 				WIDTH = nwidth;
 				HEIGHT = nheight;
-				ren.createProj(nwidth, nheight);
+
+				if (WIDTH == 0) {
+					WIDTH = 1;
+				}
+
+				if (HEIGHT == 0) {
+					HEIGHT = 1;
+				}
+
+				ren.createProj(WIDTH, HEIGHT);
 				glfwMakeContextCurrent(window);
 				GLContext.createFromCurrent();
 				glfwSwapInterval(1);
@@ -259,7 +271,7 @@ public class MainLoop {
 		GLFW.glfwSetCharCallback(window, cc);
 		GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 				GLFW.GLFW_CURSOR_DISABLED);
-		
+
 		try {
 			MasterLoader.init(loader);
 		} catch (DirectoryNotSetException e1) {
@@ -267,7 +279,7 @@ public class MainLoop {
 			e1.printStackTrace();
 			close();
 		}
-		
+
 		try {
 			unihand.init();
 		} catch (Exception e) {
@@ -297,7 +309,7 @@ public class MainLoop {
 			while (unprocessed >= 1) {
 				updates++;
 				try {
-					tick();	
+					tick();
 				} catch (Exception e) {
 					e.printStackTrace(System.out);
 				}
@@ -306,8 +318,8 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(UniverseHandler.entitys, unihand.guis, unihand.lights,
-						unihand.warp);
+				ren.render(UniverseHandler.entitys, unihand.guis,
+						unihand.lights, unihand.warp);
 				fps++;
 				shouldrender = false;
 			}

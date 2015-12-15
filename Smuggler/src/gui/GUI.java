@@ -7,9 +7,8 @@ import java.util.ArrayList;
 import math3d.Vector3f;
 import models.Texturedmodel;
 import controler.GameState;
-import entity.BasicEntity;
 
-public class GUI implements BasicEntity {
+public class GUI{
 
 	protected Vector3f position=new Vector3f();
 	protected float rx = 0;
@@ -18,8 +17,8 @@ public class GUI implements BasicEntity {
 	protected float width = 0;
 	protected float height = 0;
 	protected Texturedmodel model = null;
-	private ArrayList<GUI> subGUIs;
 	private GameState showstate;
+	private ArrayList<GUI> subGUIs;
 
 	public GUI(Vector3f position, float rx, float ry,
 			float rz, float width, float height,GameState showstate, Texturedmodel model) {
@@ -32,18 +31,22 @@ public class GUI implements BasicEntity {
 		this.height = height;
 		this.model = model;
 		this.showstate=showstate;
-		subGUIs=new ArrayList<GUI>();
+		this.subGUIs=new ArrayList<GUI>();
 	}
 	
-	public void add(GUI gui){
-		subGUIs.add(gui);
-	}
-	
-	public void remove(GUI gui){
-		subGUIs.remove(gui);
+	public GUI(Vector3f position, float rx, float ry,
+			float rz, float width, float height,GameState showstate) {
+		super();
+		this.position = position;
+		this.rx = rx;
+		this.ry = ry;
+		this.rz = rz;
+		this.width = width;
+		this.height = height;
+		this.showstate=showstate;
+		this.subGUIs=new ArrayList<GUI>();
 	}
 
-	@Override
 	public void move(float x, float y, float z) {
 		
 		position.x+=x;
@@ -53,19 +56,11 @@ public class GUI implements BasicEntity {
 
 	}
 
-	@Override
 	public void rotate(float rx, float ry, float rz) {
 		this.rx+=rx;
 		this.ry+=ry;
 		this.rz+=rz;
-		
 	}
-	
-	@Override
-	public void ModifyRotVelocity(Vector3f Velocity) {}
-
-	@Override
-	public void Scale(float s) {}
 	
 	public void Scale(float width,float height){
 		this.width+=width;
@@ -98,12 +93,6 @@ public class GUI implements BasicEntity {
 		return ry;
 	}
 
-	public BasicEntity getMaster() {
-		return null;
-	}
-
-	public void setMaster(BasicEntity master) {}
-
 	public void setRy(float ry) {
 		this.ry = ry;
 	}
@@ -116,47 +105,12 @@ public class GUI implements BasicEntity {
 		this.rz = rz;
 	}
 
-	public float getScale() {
-		return 0;}
-
-	public void setScale(float scale) {}
-
 	public Texturedmodel getModel() {
 		return model;
 	}
 
 	public void setModel(Texturedmodel model) {
 		this.model = model;
-	}
-
-	public ArrayList<BasicEntity> getSubObjects() {
-		return null;
-	}
-
-	public void setSubObjects(ArrayList<BasicEntity> subObjects) {}
-	
-
-	public boolean isDyn() {
-		return false;
-	}
-
-	public void setDyn(boolean dyn) {}
-
-	@Override
-	public void addObject(BasicEntity object) {}
-
-	@Override
-	public void removeObject(BasicEntity object) {}
-	
-	@Override
-	public void ModifyVelocity(Vector3f Velocity) {}
-
-	@Override
-	public void setRotVelocity(Vector3f Velocity) {}
-
-	@Override
-	public Vector3f getRotVelocity() {
-		return new Vector3f();
 	}
 
 	public ArrayList<GUI> getSubGUIs() {
@@ -172,6 +126,14 @@ public class GUI implements BasicEntity {
 			gui.update(mouse, state);
 		}
 		}
+	}
+	
+	public void addGUI(GUI gui){
+		subGUIs.add(gui);
+	}
+	
+	public void removeGUI(GUI gui){
+		subGUIs.remove(gui);
 	}
 
 	public float getWidth() {
@@ -204,36 +166,6 @@ public class GUI implements BasicEntity {
 		}
 	}
 	
-	public void endrendering(){}
-
-	@Override
-	public boolean collides(BasicEntity b) {
-		return false;
-	}
-
-	@Override
-	public boolean isHard() {
-		return false;
-	}
-
-	@Override
-	public Vector3f getPositionOffset() {
-		return new Vector3f(0,0,0);
-	}
-
-	@Override
-	public float getRadius() {
-		return 0;
-	}
-
-	@Override
-	public float getMass() {
-		return 0;
-	}
-
-	@Override
-	public void tick() {}
-	
-	
+	public void endrendering(){}	
 
 }

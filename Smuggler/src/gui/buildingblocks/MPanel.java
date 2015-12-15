@@ -12,5 +12,10 @@ public class MPanel extends GUI {
 			GameState showstate,Texturedmodel model) {
 		super(position, rx, ry, rz, width, height, showstate, model);
 	}
+	
+	public MPanel(Vector3f position, float rx, float ry, float rz, float width, float height,
+			GameState showstate) {
+		super(position, rx, ry, rz, width, height, showstate);
+	}
 
 }
