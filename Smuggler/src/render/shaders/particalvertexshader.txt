@@ -1,0 +1,32 @@
+#version 400 core
+
+in vec2 position;
+
+out vec2 texturecoords1;
+out vec2 texturecoords2;
+
+uniform mat4 modelviewMatrix;
+uniform mat4 rotmat;
+uniform mat4 projmat;
+
+uniform float numberofrows;
+
+uniform vec2 offset1;
+uniform vec2 offset2;
+
+void main(void){
+	
+	gl_Position = projmat* modelviewMatrix *rotmat* vec4(position, 0.0, 1.0);
+	
+	vec2 texturecoords;
+	
+	texturecoords=position+vec2(0.5, 0.5);
+	
+	texturecoords.y= 1- texturecoords.y;
+	
+	texturecoords=texturecoords/numberofrows;
+	
+	texturecoords1=texturecoords+offset1;
+	texturecoords2=texturecoords+offset2;
+	
+}

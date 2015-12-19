@@ -10,7 +10,7 @@ uniform mat4 rotform;
 
 void main(void){
 	
-	gl_Position=transform*rotform*vec4(position,1.0);
+	gl_Position=transform*vec4(position,1.0);
 	
 	
 	

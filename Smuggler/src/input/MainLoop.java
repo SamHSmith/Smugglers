@@ -14,6 +14,7 @@ import static org.lwjgl.opengl.GL11.GL_TRUE;
 import static org.lwjgl.system.MemoryUtil.NULL;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import loading.MasterLoader;
 import loading.ModelLoader;
@@ -33,6 +34,7 @@ import org.lwjgl.openal.ALContext;
 import org.lwjgl.opengl.GLContext;
 
 import render.Camera;
+import render.MasterRenderer;
 import render.Renderer;
 import render.shaders.EntityShader;
 import render.shaders.GUIshader;
@@ -61,7 +63,7 @@ public class MainLoop {
 	ModelLoader loader;
 	EntityShader shader;
 	GUIshader guishader;
-	Renderer ren;
+	MasterRenderer ren;
 	Warp warp;
 	ArrayList<BasicEntity> entitys;
 	ArrayList<GUI> guis;
@@ -69,7 +71,6 @@ public class MainLoop {
 	public Camera cam;
 	public static ArrayList<Key> keys;
 	public static boolean mousedis = false;
-	public static int mousedistimer = 0;
 	Listener listen;
 	private UniverseHandler unihand;
 	public Mouse mouse;
@@ -163,11 +164,11 @@ public class MainLoop {
 
 	private void init() {
 		guishader = new GUIshader();
-		ren = new Renderer(this, unihand);
 		keys = new ArrayList<Key>();
 		listen = new Listener();
 		loader = new ModelLoader();
 		unihand.loader = loader;
+		ren = new MasterRenderer(this, unihand, loader);
 		mouse = new Mouse(false, false, false);
 		cam = new Camera(new Vector3f(), 0, 0, 0, false);
 		TextMaster.init(loader);
@@ -318,8 +319,8 @@ public class MainLoop {
 			}
 
 			if (shouldrender) {
-				ren.render(UniverseHandler.entitys, unihand.guis,
-						unihand.lights, unihand.warp);
+				ren.render(unihand.entitys, unihand.guis,
+						unihand.lights, cam);
 				fps++;
 				shouldrender = false;
 			}
@@ -351,15 +352,6 @@ public class MainLoop {
 		} else {
 			GLFW.glfwSetInputMode(window, GLFW.GLFW_CURSOR,
 					GLFW.GLFW_CURSOR_NORMAL);
-		}
-
-		for (int i = 0; i < UniverseHandler.entitys.size(); i++) {
-			UniverseHandler.entitys.get(i).tick();
-		}
-
-		for (int i = 0; i < UniverseHandler.removedentitys.size(); i++) {
-			UniverseHandler.entitys.remove(UniverseHandler.removedentitys
-					.get(i));
 		}
 
 		unihand.tick();
@@ -422,7 +414,7 @@ public class MainLoop {
 		return ren;
 	}
 
-	public void setRen(Renderer ren) {
+	public void setRen(MasterRenderer ren) {
 		this.ren = ren;
 	}
 }

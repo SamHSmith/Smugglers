@@ -17,7 +17,7 @@ public class MainMenu extends MPanel {
 
 	private Source src;
 	private Sound s;
-	private static final float volume=0.5f;
+	private static final float volume = 0.5f;
 
 	public MainMenu(float width, float height, GameState showstate) {
 		super(new Vector3f(), 0, 0, 0, width, height, showstate);
@@ -50,36 +50,42 @@ public class MainMenu extends MPanel {
 						0.5f, showstate, model, "Smugglers", MasterLoader.fonts
 								.get(readable.getId()), new Vector3f(1, 1, 1),
 						4));
-			
-			this.addGUI(new MLabel(new Vector3f(0.42f, 0.47f, 0), 0, 0, 0, 0.2f,
-					0.1f, showstate, model, "Version Alpha 0.0.1", MasterLoader.fonts
-							.get(readable.getId()), new Vector3f(1, 1, 1),
-					1));
+
+			this.addGUI(new MLabel(new Vector3f(0.42f, 0.47f, 0), 0, 0, 0,
+					0.2f, 0.1f, showstate, model, "Version Alpha 0.0.1",
+					MasterLoader.fonts.get(readable.getId()), new Vector3f(1,
+							1, 1), 1));
 
 		}
-		
+
 		src = new Source(new Vector3f(), new Vector3f(), 1, false);
 
 		if (music != null) {
 			if (music.getRestype() == ResourceType.Sound) {
 				s = MasterLoader.sounds.get(music.getId());
-				
-				src.Play(s, true);
 			}
 		}
 
 	}
+	
+	private GameState lastState=GameState.None;
 
 	@Override
 	public void update(Mouse mouse, GameState state) {
 		super.update(mouse, state);
 		
-		src.update(new Vector3f(), new Vector3f(),volume*UniverseHandler.masterVolume);
 		
-		if (state == this.getShowstate()) {
 
-		}else{
+		src.update(new Vector3f(), new Vector3f(), volume
+				* UniverseHandler.masterVolume);
+
+		if (state == this.getShowstate()) {
+			if (lastState!=this.getShowstate()) {
+				src.Play(s, true);
+			}
+		} else {
 			src.Stop(s);
 		}
+		lastState=state;
 	}
 }

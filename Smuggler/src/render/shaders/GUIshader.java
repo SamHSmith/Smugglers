@@ -8,7 +8,6 @@ public class GUIshader extends ShaderProgram {
 	private static final String FRAGFILE="GUIfrag.txt";
 
 	private int matloc;
-	private int rotloc;
 
 	public GUIshader() {
 		super(GUIshader.class.getResourceAsStream(VERTEXFILE), GUIshader.class.getResourceAsStream(FRAGFILE));
@@ -17,7 +16,6 @@ public class GUIshader extends ShaderProgram {
 	@Override
 	protected void getAllUniforms() {
 		matloc=super.GetUniFormL("transform");
-		rotloc=super.GetUniFormL("rotform");
 	}
 
 	@Override
@@ -27,9 +25,8 @@ public class GUIshader extends ShaderProgram {
 
 	}
 	
-	public void loadmatices(Matrix4f trans,Matrix4f rot){
-	super.loadmatrix(matloc, trans);
-	super.loadmatrix(rotloc, rot);
+	public void loadmatices(Matrix4f trans){
+		super.loadmatrix(matloc, trans);
 	}
 	
 

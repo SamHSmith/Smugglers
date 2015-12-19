@@ -8,57 +8,33 @@ import org.lwjgl.openal.AL10;
 
 
 public class Maths {
-
-	public static Matrix4f createnegativetransmat(Vector3f pos){
-		Matrix4f m = new Matrix4f();
-		Vector3f vec = new Vector3f(pos);
-		vec.negate();
-		m.translate(vec);
-		
-		return m;
-	}
 	
-	public static Matrix4f createtransmat(Vector3f pos, float s){
+	public static Matrix4f createtransmat(Vector3f pos, float s,float rx,float ry,float rz){
 		Matrix4f m = new Matrix4f();
 		m.scale(s);
-		m.translate(pos);
+		m.translate(new Vector3f(pos));
+		m.rotateX(rx);
+		m.rotateY(ry);
+		m.rotateZ(rz);
 		
 		return m;
 	}
 	
 	public static String baddCharecterFilter(String s){
 		
-		String olds=new String(s);
+		String newString =new String(s.replaceAll("[^a-zA-Z.]", ""));
 		
-		String news =new String(s.replaceAll("[^a-zA-Z.]", ""));
-		
-		return news;
+		return newString;
 	}
 	
-	public static Matrix4f createtransmat(Vector3f pos, float width, float height){
+	public static Matrix4f createtransmat(Vector3f pos, float width, float height,float rx,float ry,float rz){
 		Matrix4f m = new Matrix4f();
 		m.scale(width, height, 0);
 		m.translate(pos);
-		
-		return m;
-	}
-	
-	public static Matrix4f createrotmat(float rx,float ry ,float rz){
-		Matrix4f m = new Matrix4f();
 		m.rotateX(rx);
 		m.rotateY(ry);
 		m.rotateZ(rz);
 		
-		
-		return m;
-	}
-	public static Matrix4f flippedcreaterotmat(float rx,float ry ,float rz){
-		Matrix4f m = new Matrix4f();
-		
-		
-		m.rotateZ(rz);
-		m.rotateY(ry);
-		m.rotateX(rx);
 		return m;
 	}
 	
@@ -77,6 +53,7 @@ public class Maths {
 		
 		return new Vector3f(vec.x,vec.y,vec.z);
 	}
+	
 	 /**
 	   * 1) Identify the error code.
 	   * 2) Return the error as a string.

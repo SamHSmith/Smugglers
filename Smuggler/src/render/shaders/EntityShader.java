@@ -19,19 +19,11 @@ public class EntityShader extends ShaderProgram {
 	private static final int MAX_LIGHTS = 4;
 
 	private int projmatloc;
-	private int warpingRangeloc;
-	private int warpingStrengthloc;
-	private int transmatloc;
-	private int viewmatloc;
-	private int rotmatloc;
-	private int warpingpointloc;
 	private int lightposloc[];
 	private int lightcolorloc[];
 	private int attenuationloc[];
-	private int viewposmatloc;
-	private int shadprojmatloc;
-	private int shadowmaploc;
-	private int shadviewloc;
+	private int transformloc;
+	private int viewmatloc;
 
 	public EntityShader() {
 		super(EntityShader.class.getResourceAsStream(VERTEXFILE), EntityShader.class.getResourceAsStream(FRAGFILE));
@@ -46,17 +38,10 @@ public class EntityShader extends ShaderProgram {
 
 	@Override
 	protected void getAllUniforms() {
-		transmatloc = super.GetUniFormL("transmat");
-		viewposmatloc = super.GetUniFormL("viewposmat");
-		viewmatloc = super.GetUniFormL("viewrotmat");
-		rotmatloc = super.GetUniFormL("rotmat");
 		projmatloc = super.GetUniFormL("projmat");
-		warpingpointloc = super.GetUniFormL("warpingpoint");
-		warpingRangeloc = super.GetUniFormL("warpingRange");
-		warpingStrengthloc = super.GetUniFormL("warpingStrength");
-		shadprojmatloc = super.GetUniFormL("shadprojmat");
-		shadowmaploc = super.GetUniFormL("shadowmap");
-		shadviewloc=super.GetUniFormL("shadview");
+		
+		transformloc=super.GetUniFormL("transform");
+		viewmatloc=super.GetUniFormL("viewmat");
 
 		lightcolorloc = new int[MAX_LIGHTS];
 		lightposloc = new int[MAX_LIGHTS];
@@ -69,48 +54,17 @@ public class EntityShader extends ShaderProgram {
 		}
 	}
 
-	public void loadshadowmap(int i) {
-		super.loadInt(shadowmaploc, i);
-		
-		start();
-		GL13.glActiveTexture(GL13.GL_TEXTURE0);
-		GL11.glBindTexture(GL11.GL_TEXTURE_2D, i);
-		stop();
-	}
-	
-	public void loadshadprojmat(Matrix4f mat) {
-		super.loadmatrix(shadprojmatloc, mat);
-	}
-
 	public void loadprojmat(Matrix4f mat) {
 		super.loadmatrix(projmatloc, mat);
 	}
-
-	public void loadrotmat(Matrix4f viewmat) {
-		super.loadmatrix(rotmatloc, viewmat);
+	
+	public void loadtransform(Matrix4f mat) {
+		super.loadmatrix(transformloc, mat);
 	}
-
-	public void loadviewmat(Matrix4f viewmat) {
-		super.loadmatrix(viewposmatloc, viewmat);
+	public void loadviewmat(Matrix4f mat) {
+		super.loadmatrix(viewmatloc, mat);
 	}
 	
-	public void loadshadview(Matrix4f viewmat) {
-		super.loadmatrix(shadviewloc, viewmat);
-	}
-
-	public void loadviewrotmat(Matrix4f viewmat) {
-		super.loadmatrix(viewmatloc, viewmat);
-	}
-
-	public void loadTransmat(Matrix4f transmat) {
-		super.loadmatrix(transmatloc, transmat);
-	}
-
-	public void loadWarp(Warp warp) {
-		super.loadVector3f(warpingpointloc, warp.getPosition());
-		super.loadFloat(warpingRangeloc, warp.getRange());
-		super.loadFloat(warpingStrengthloc, warp.getStrength());
-	}
 
 	public void loadlights(ArrayList<Light> lights) {
 

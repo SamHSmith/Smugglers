@@ -8,6 +8,7 @@ import java.io.InputStreamReader;
 import java.nio.FloatBuffer;
 
 import math3d.Matrix4f;
+import math3d.Vector2f;
 import math3d.Vector3f;
 
 import org.lwjgl.BufferUtils;
@@ -44,7 +45,7 @@ public abstract class ShaderProgram {
 	protected void loadFloat(int location, float valeu) {
 		GL20.glUniform1f(location, valeu);
 	}
-	
+
 	protected void loadInt(int location, int valeu) {
 		GL20.glUniform1i(location, valeu);
 	}
@@ -53,9 +54,14 @@ public abstract class ShaderProgram {
 		GL20.glUniform3f(location, vec.x, vec.y, vec.z);
 	}
 
-	protected void loadmatrix(int location, Matrix4f viewmat){
-		GL20.glUniformMatrix4(location, false, writeMatrixToBuffer(viewmat, matrixbuffer));
-		}
+	protected void loadVector2f(int location, Vector2f vec) {
+		GL20.glUniform2f(location, vec.x, vec.y);
+	}
+
+	protected void loadmatrix(int location, Matrix4f viewmat) {
+		GL20.glUniformMatrix4(location, false,
+				writeMatrixToBuffer(viewmat, matrixbuffer));
+	}
 
 	public static FloatBuffer writeMatrixToBuffer(Matrix4f matrix,
 			FloatBuffer buffer) {
@@ -90,7 +96,8 @@ public abstract class ShaderProgram {
 		StringBuilder shaderscorce = new StringBuilder();
 
 		try {
-			BufferedReader reader = new BufferedReader (new InputStreamReader(in));
+			BufferedReader reader = new BufferedReader(
+					new InputStreamReader(in));
 			String line;
 			while ((line = reader.readLine()) != null) {
 				shaderscorce.append(line).append("\n");
@@ -98,7 +105,8 @@ public abstract class ShaderProgram {
 			reader.close();
 		} catch (Exception e) {
 			System.err.println("FAILED TO LOAD SHADER");
-			System.err.println("THE GAME WILL STILL RUN BUT THE SHADER WON'T WORK");
+			System.err
+					.println("THE GAME WILL STILL RUN BUT THE SHADER WON'T WORK");
 		}
 		int shaderid = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderid, shaderscorce);
