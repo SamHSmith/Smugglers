@@ -27,6 +27,15 @@ public abstract class ShaderProgram {
 		vShaderID = loadShader(vfile, GL20.GL_VERTEX_SHADER);
 		fragshaderID = loadShader(fragmentfile, GL20.GL_FRAGMENT_SHADER);
 		programID = GL20.glCreateProgram();
+		
+		if(fragshaderID==0){
+			printErrorMessage("Could not find fragmentshader");
+		}
+		
+		if(vShaderID==0){
+			printErrorMessage("Could not find vertexshader");
+		}
+		
 		GL20.glAttachShader(programID, vShaderID);
 		GL20.glAttachShader(programID, fragshaderID);
 		bindAtributes();
@@ -36,6 +45,8 @@ public abstract class ShaderProgram {
 	}
 
 	protected abstract void getAllUniforms();
+	
+	protected abstract void printErrorMessage(String message);
 
 	protected int GetUniFormL(String uniformname) {
 		return GL20.glGetUniformLocation(programID, uniformname);
@@ -104,9 +115,7 @@ public abstract class ShaderProgram {
 			}
 			reader.close();
 		} catch (Exception e) {
-			System.err.println("FAILED TO LOAD SHADER");
-			System.err
-					.println("THE GAME WILL STILL RUN BUT THE SHADER WON'T WORK");
+			return 0;
 		}
 		int shaderid = GL20.glCreateShader(type);
 		GL20.glShaderSource(shaderid, shaderscorce);

@@ -6,8 +6,8 @@ import math3d.Vector2f;
 
 public class ParticalShader extends ShaderProgram {
 
-	private static final String vfile = "/render/shaders/particalvertexshader.txt";
-	private static final String fragmentfile = "/render/shaders/particalfragmentshader.txt";
+	private static final String vfile = "particalvertexshader.txt";
+	private static final String fragmentfile = "particalfragmentshader.txt";
 	
 	private int modelviewmatloc;
 	private int rotmatloc;
@@ -18,7 +18,7 @@ public class ParticalShader extends ShaderProgram {
 	private int blendloc;
 
 	public ParticalShader() {
-		super(EntityShader.class.getResourceAsStream(vfile), EntityShader.class
+		super(ParticalShader.class.getResourceAsStream(vfile), ParticalShader.class
 				.getResourceAsStream(fragmentfile));
 	}
 
@@ -55,6 +55,12 @@ public class ParticalShader extends ShaderProgram {
 		super.loadVector2f(offset1loc, offset1);
 		super.loadVector2f(offset2loc, offset2);
 		super.loadFloat(blendloc, blend);
+	}
+	
+	@Override
+	protected void printErrorMessage(String message) {
+		System.err.println("Partical Shader Failed: ");
+		System.err.println(message);
 	}
 
 }

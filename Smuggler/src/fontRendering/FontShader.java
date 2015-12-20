@@ -36,6 +36,12 @@ public class FontShader extends ShaderProgram{
 	protected void loadTranslation(Vector2f translation){
 		super.loadVector3f(location_translation, new Vector3f(translation,0));
 	}
+	
+	@Override
+	protected void printErrorMessage(String message) {
+		System.err.println("Font Shader Failed: ");
+		System.err.println(message);
+	}
 
 
 }

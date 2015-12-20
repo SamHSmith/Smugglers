@@ -40,7 +40,6 @@ public abstract class Renderer {
 	public static final int shadow_Map_Width_And_Height = 512;
 
 	protected Renderer(MainLoop loop, UniverseHandler unihand) {
-		super();
 		this.shader = new EntityShader();
 		this.pshader = new ParticalShader();
 		this.guishader = new GUIshader();

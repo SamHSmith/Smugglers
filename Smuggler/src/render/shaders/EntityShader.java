@@ -13,8 +13,8 @@ import entity.Warp;
 
 public class EntityShader extends ShaderProgram {
 
-	private static final String VERTEXFILE = "/render/shaders/vertexshader.txt";
-	private static final String FRAGFILE = "/render/shaders/fragmentshader.txt";
+	private static final String VERTEXFILE = "vertexshader.txt";
+	private static final String FRAGFILE = "fragmentshader.txt";
 
 	private static final int MAX_LIGHTS = 4;
 
@@ -80,6 +80,12 @@ public class EntityShader extends ShaderProgram {
 				super.loadVector3f(attenuationloc[i], new Vector3f(1, 0, 0));
 			}
 		}
+	}
+
+	@Override
+	protected void printErrorMessage(String message) {
+		System.err.println("Entity Shader Failed: ");
+		System.err.println(message);
 	}
 
 }

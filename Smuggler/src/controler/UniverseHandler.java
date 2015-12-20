@@ -25,10 +25,8 @@ import physics.PhysicsEngine;
 import render.MasterRenderer;
 import entity.BasicEntity;
 import entity.Light;
-import entity.Partical;
 import entity.ParticalEmiter;
 import entity.PhiEntity;
-import entity.Warp;
 
 public class UniverseHandler {
 	private MainLoop loop;
@@ -56,15 +54,6 @@ public class UniverseHandler {
 		phe = new MainEngine(this);
 
 		guis.add(new MainMenu(1, 1, GameState.MainMenu));
-
-		Resource flame = MasterLoader.getResource("Magic.png");
-
-		if (flame != null && flame.getRestype() == ResourceType.Texture) {
-			entitys.add(new ParticalEmiter(new Vector3f(0,-0.005f,0.02f), new Vector3f(-1, 1,
-					-10), new Vector3f(), 1f, 0.5f, 0.03f, 1f,
-					50, new ParticalTexture(MasterLoader.textures.get(flame
-							.getId()), 1, GL11.GL_ONE)));
-		}
 
 		Light l = new Light(new Vector3f(0, 0.001f, -0.002f), new Vector3f(),
 				new Vector3f(0, 1, 0.5f));

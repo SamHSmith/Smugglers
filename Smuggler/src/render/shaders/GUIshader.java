@@ -29,5 +29,11 @@ public class GUIshader extends ShaderProgram {
 		super.loadmatrix(matloc, trans);
 	}
 	
+	@Override
+	protected void printErrorMessage(String message) {
+		System.err.println("GUI Shader Failed: ");
+		System.err.println(message);
+	}
+	
 
 }
