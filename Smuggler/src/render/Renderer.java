@@ -184,6 +184,9 @@ public abstract class Renderer {
 				guishader.loadmatices(Maths.createtransmat(gui.getPosition(),
 						gui.getWidth(), gui.getHeight(), gui.getRx(),
 						gui.getRy(), gui.getRz()));
+				
+				GL11.glEnable(GL11.GL_BLEND);
+				GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
 
 				GL30.glBindVertexArray(rawmodel.getVaoid());
 				GL20.glEnableVertexAttribArray(0);
@@ -212,7 +215,7 @@ public abstract class Renderer {
 
 		int texture = p.getTexture().getId();
 		
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, p.getTexture().getBlendfunc());
+		//GL11.glBlendFunc(GL11.GL_SRC_ALPHA, p.getTexture().getBlendfunc());
 		
 		shader.start();
 		
@@ -221,7 +224,7 @@ public abstract class Renderer {
 		GL30.glBindVertexArray(model.getVaoid());
 		GL20.glEnableVertexAttribArray(0);
 		GL11.glEnable(GL11.GL_BLEND);
-		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE_MINUS_SRC_ALPHA);
+		GL11.glBlendFunc(GL11.GL_SRC_ALPHA, GL11.GL_ONE);
 		GL11.glDepthMask(false);
 
 		GL13.glActiveTexture(GL13.GL_TEXTURE0);
@@ -260,7 +263,7 @@ public abstract class Renderer {
 	}
 
 	public void createProj(int width, int height) {
-		float aspect = width / height;
+		float aspect = (float)width / (float)height;
 
 		projmat = new Matrix4f();
 

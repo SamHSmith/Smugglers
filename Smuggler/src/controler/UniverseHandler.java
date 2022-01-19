@@ -36,12 +36,15 @@ public class UniverseHandler {
 	public ArrayList<Light> lights;
 	public MasterRenderer ren;
 	public ModelLoader loader;
-	private GameState state = GameState.InGame;
+	private GameState state = GameState.MainMenu;
 	private PhysicsEngine phe;
 	public static Texturedmodel[] models;
 	public static float masterVolume = 1;
+	
+	public static UniverseHandler singleton;
 
 	public UniverseHandler() {
+		singleton = this;
 		loop = new MainLoop(this);
 		loop.start();
 	}
@@ -77,9 +80,18 @@ public class UniverseHandler {
 				&& t.getRestype() == ResourceType.Texture) {
 
 			entitys.add(new PhiEntity(new Vector3f(0, -3, -7), new Vector3f(
-					0.005f, 0.005f, 0), new Vector3f(0.3f, 0.05f, 0.05f), 0, 0,
+					0.005f, 0.005f, 0), new Vector3f(0.3f, -0.05f, 0.05f), 0, 0,
 					0, 0.2f, 1, new Texturedmodel(MasterLoader.models.get(m
 							.getId()), MasterLoader.textures.get(t.getId()))));
+		}
+		
+		Resource flame = MasterLoader.getResource("Magic.png");
+
+		if (flame != null && flame.getRestype() == ResourceType.Texture) {
+			entitys.add(new ParticalEmiter(new Vector3f(0,-0f,0.01f), new Vector3f(-5, 0,
+					-10), new Vector3f(0,0.05f,0), 1f, 0.5f, 0.03f, 2f,
+					50, new ParticalTexture(MasterLoader.textures.get(flame
+							.getId()), 1, GL11.GL_ONE)));
 		}
 
 	}

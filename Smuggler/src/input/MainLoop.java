@@ -162,6 +162,8 @@ public class MainLoop {
 
 	}
 
+static double last_xpos = 0.0, last_ypos = 0.0;
+
 	private void init() {
 		guishader = new GUIshader();
 		keys = new ArrayList<Key>();
@@ -209,10 +211,13 @@ public class MainLoop {
 
 			@Override
 			public void invoke(long arg0, double xpos, double ypos) {
-				if (!cam.isCin()) {
-					cam.setRy((float) xpos * 180 / (WIDTH));
-					cam.setRx(-((float) ypos * -180 / (HEIGHT)));
+				if (!cam.isCin()) {					
+					
+					cam.setRy(cam.getRy() + ((float) (xpos - last_xpos) * 180 / (WIDTH)) / 2.0f);
+					cam.setRx(cam.getRx() - ((float) (ypos - last_ypos) * -180 / (HEIGHT))/2.0f);
 				}
+				last_xpos = xpos;
+				last_ypos = ypos;
 
 				mouse.x = (float) ((xpos * 2 / (WIDTH)) - 1);
 				mouse.y = (float) -((ypos * 2 / (HEIGHT)) - 1);
@@ -317,6 +322,11 @@ public class MainLoop {
 				unprocessed--;
 				shouldrender = true;
 			}
+			
+			if(cam.getRx() > 20.0f)
+			{ cam.setRx(20.f); }
+			else if(cam.getRx() < -20.0f)
+			{ cam.setRx(-20.f); }
 
 			if (shouldrender) {
 				ren.render(unihand.entitys, unihand.guis,

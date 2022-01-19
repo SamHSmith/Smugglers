@@ -122,7 +122,10 @@ public class MasterLoader {
 
 								while (true) {
 									strings = new ArrayList<String>();
-									strings.add(br.readLine());
+									String s = br.readLine();
+									if(s == null)
+									{ break; }
+									strings.add(s);
 								}
 
 							} catch (FileNotFoundException e) {

@@ -1,15 +1,5 @@
-/entity/
 /controler/
+/loading/
+/gui/
 /render/
 /input/
-/models/
-/fontRendering/
-/cinematics/
-/fontMeshCreator/
-/gui/
-/loading/
-/math3d/
-/net/
-/physics/
-/sound/
-/toolbox/

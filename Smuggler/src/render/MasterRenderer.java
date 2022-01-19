@@ -34,7 +34,7 @@ public class MasterRenderer extends Renderer {
 	@Override
 	public void render(ArrayList<BasicEntity> ents, ArrayList<GUI> gUIs,
 			ArrayList<Light> lights, Camera cam) {
-
+		
 		prepare();
 
 		clearBuffers();
